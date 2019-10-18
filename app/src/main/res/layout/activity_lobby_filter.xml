@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/black_border"
+    android:padding="8dp">
+
+
+    <TextView
+        android:id="@+id/people_num_text"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:gravity="center_vertical"
+        android:text="인원 수 :   "
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Spinner
+        android:id="@+id/filter_people_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:fontFamily="@font/cookierun_bold"
+        app:layout_constraintLeft_toRightOf="@id/people_num_text"
+        app:layout_constraintTop_toTopOf="@+id/people_num_text" />
+
+    <TextView
+        android:id="@+id/play_time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:gravity="center_vertical"
+        android:text="연주 시간 :  "
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="@+id/people_num_text"
+        app:layout_constraintTop_toBottomOf="@+id/people_num_text" />
+
+
+    <Spinner
+        android:id="@+id/filter_play_time_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:fontFamily="@font/cookierun_bold"
+        app:layout_constraintLeft_toRightOf="@id/play_time_text"
+        app:layout_constraintTop_toTopOf="@+id/play_time_text" />
+
+
+    <TextView
+        android:id="@+id/genre_text"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:gravity="center_vertical"
+        android:text="장르 ↓"
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="@+id/play_time_text"
+        app:layout_constraintTop_toBottomOf="@+id/play_time_text" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="48dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="128dp"
+        android:layout_marginLeft="128dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_circle"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="발라드"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/genre_text" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="48dp"
+        android:layout_height="47dp"
+        android:layout_marginEnd="136dp"
+        android:layout_marginRight="136dp"
+        android:background="@drawable/button_circle"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="클래식"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/button3" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="48dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_circle"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="락"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button3" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="48dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="88dp"
+        android:layout_marginRight="88dp"
+        android:background="@drawable/button_circle"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="재즈"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button4" />
+
+    <Button
+        android:id="@+id/button9"
+        android:layout_width="48dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="128dp"
+        android:layout_marginLeft="128dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/button_circle"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="힙합"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button6" />
+
+    <Button
+        android:id="@+id/button10"
+        android:layout_width="48dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="136dp"
+        android:layout_marginRight="136dp"
+        android:background="@drawable/button_circle"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="EDM"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button5" />
+
+    <Button
+        android:id="@+id/button8"
+        android:layout_width="48dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/button_circle"
+        android:fontFamily="@font/cookierun_bold"
+        android:text=""
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/button5"
+        app:layout_constraintHorizontal_bias="0.518"
+        app:layout_constraintStart_toEndOf="@+id/button6"
+        app:layout_constraintTop_toBottomOf="@+id/button3" />
+
+    <Button
+        android:id="@+id/button11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/button_click_effect"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="선택"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button9" />
+
+</android.support.constraint.ConstraintLayout>

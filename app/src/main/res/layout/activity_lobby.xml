@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_blue_white_gradient"
+    tools:context=".LobbyActivity">
+
+    <ImageView
+        android:layout_width="206dp"
+        android:layout_height="122dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:src="@drawable/busan_logo_image"
+        app:layout_constraintBottom_toBottomOf="@+id/room_create_btn"
+        app:layout_constraintEnd_toStartOf="@+id/room_create_btn"
+        app:layout_constraintHorizontal_bias="0.258"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/room_create_btn"
+        app:layout_constraintVertical_bias="0.542" />
+
+    <Button
+        android:id="@+id/room_create_btn"
+        android:layout_width="128dp"
+        android:layout_height="87dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/button_click_effect"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="방 만들기"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/filter_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="필터 ▼"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/room_create_btn" />
+
+    <include
+        android:id="@+id/filter_layout"
+        layout="@layout/activity_lobby_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/filter_text" />
+
+
+    <TextView
+        android:id="@+id/room_list_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="방 목록"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filter_layout" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/room_list_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/room_list_text">
+
+    </android.support.v7.widget.RecyclerView>
+
+</android.support.constraint.ConstraintLayout>

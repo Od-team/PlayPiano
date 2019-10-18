@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="bgColor">#05a3f7</color>
+    <drawable name="btn_click_gray_color">#B5B5B6</drawable>
+    <drawable name="white_color">#ffffff</drawable>
+    <color name="blue_color">#0000ff</color>
+    <color name="gray_color">#B5B5B6</color>
+    <color name="black_color">#000000</color>
+    <color name="red_color">#ff0000</color>
+    <color name="green_color">#00ff00</color>
+</resources>

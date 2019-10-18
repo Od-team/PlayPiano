@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="400dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/solid_white_border_black"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/solid_white_bottom_black"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/room_number_text"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:fontFamily="@font/cookierun_bold"
+            android:gravity="center"
+            android:text="No.1"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/room_genre_text"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:fontFamily="@font/cookierun_bold"
+            android:gravity="center"
+            android:text="/ 클래식"
+            android:textAlignment="center"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/room_play_time_text"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:fontFamily="@font/cookierun_bold"
+            android:gravity="center"
+            android:text="/ 10초"
+            android:textAlignment="center"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/room_master_id_text"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/cookierun_bold"
+            android:gravity="center"
+            android:text="/ super_man님의 방"
+            android:textAlignment="center"
+            android:textSize="16dp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/room_name_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:fontFamily="@font/cookierun_bold"
+            android:gravity="center"
+            android:text="5학년 3반 모여라~~"
+            android:textColor="@color/black_color"
+            android:textSize="22dp" />
+
+        <TextView
+            android:id="@+id/room_current_people_text"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="0.3"
+            android:fontFamily="@font/cookierun_bold"
+            android:gravity="center"
+            android:text="인원 : 3/5"
+            android:textSize="16dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
+

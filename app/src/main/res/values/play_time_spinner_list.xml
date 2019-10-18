@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="play_time_spinner_list">
+        <item>10초</item>
+        <item>20초</item>
+        <item>30초</item>
+        <item>40초</item>
+        <item>50초</item>
+        <item>60초</item>
+    </string-array>
+</resources>
