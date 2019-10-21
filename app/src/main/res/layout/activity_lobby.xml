@@ -25,8 +25,8 @@
 
     <Button
         android:id="@+id/room_create_btn"
-        android:layout_width="128dp"
-        android:layout_height="87dp"
+        android:layout_width="117dp"
+        android:layout_height="84dp"
         android:layout_gravity="right"
         android:layout_marginTop="30dp"
         android:layout_marginRight="30dp"
