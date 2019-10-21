@@ -43,4 +43,6 @@ dependencies {
     //seekBar
     implementation 'com.github.marcinmoskala:ArcSeekBar:0.31'
 
+    //note explosion
+    implementation 'tyrantgit:explosionfield:1.0.1'
 }

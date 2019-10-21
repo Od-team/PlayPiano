@@ -1,17 +1,27 @@
 package od.team.playpiano;
 
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 import od.team.playpiano.Adapter.RoomListAdapter;
@@ -46,14 +56,49 @@ public class LobbyActivity extends AppCompatActivity {
     LinearLayoutManager linearLayoutManager;
     ArrayList<RecyclerRoomListData> roomListData = new ArrayList<>();
 
+
+    Context context;
+    MainService service;
+    Intent serviceIntent;
+
+    String TAG = "tag "+this.getClass().getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
+
+        context = getApplicationContext();
+        service = new MainService(getApplicationContext());
+        serviceIntent = new Intent(getApplicationContext(), MainService.class);
+
+        //지금 서비스가 실행되고 있지 않다면 -> 서비스를 실행한다
+        if(!isMyServiceRunning(service.getClass())){
+            startService(serviceIntent);
+            Log.d("서비스", "로비- startService");
+        }
+
+        sendMsg("hi service i'm lobby");
+
         init();
         BtnClickListener();
         roomAlertDialog();
+
+
+        Button note_explosion_test_btn = (Button)findViewById(R.id.note_explosion_test_btn);
+        note_explosion_test_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(getApplicationContext(), GameScreenActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+
+
     }
 
     public void init(){
@@ -178,4 +223,62 @@ public class LobbyActivity extends AppCompatActivity {
         filter_play_time_spinner.setAdapter(filter_play_time_Adapter);
 
     }
+
+
+
+    //현재 서비스가 실행중인지 확인
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+
+        ActivityManager manager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo service: manager.getRunningServices(Integer.MAX_VALUE)){
+            if(serviceClass.getName().equals(service.service.getClassName())){
+                Log.d("서비스", "isMyServiceRunning? "+true);
+                return true;
+            }
+        }
+        Log.d("서비스", "isMyServiceRunning? "+false);
+        return false;
+    }
+
+
+
+
+    /*서비스로부터 메시지를 받기 위한 준비*/
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //이 액티비티가 화면에 떠 있을 때만 서비스로부터 메시지를 받는다
+        //lobby_event 라는 이름을 가진 이벤트를 수신한다
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, new IntentFilter("lobby_event"));
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //화면에서 이 액티비티가 사라지면 - 브로드캐스트를 끊는다
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver);
+    }
+
+
+    //서비스에서 보낸 메시지를 받는 메소드
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            Log.d("서비스", "Receiver) message received: " + message);
+        }
+    };
+
+
+    //서비스로 메시지를 보낸다
+    void sendMsg(String msg){
+        Intent intent = new Intent(getApplicationContext(), MainService.class);
+        intent.putExtra("message", msg);
+
+        startService(intent);
+    }
+
 }
