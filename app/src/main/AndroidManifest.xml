@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="od.team.playpiano">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <permission android:name="android.permission.INTERNET" />
@@ -15,7 +16,43 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".TutorialActivity" android:theme="@android:style/Theme.Dialog"></activity>
+        <activity
+            android:name="ConnectActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Dialog"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="appr.tc"
+                    android:scheme="https" />
+                <data
+                    android:host="appr.tc"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="SettingsActivity"
+            android:label="@string/settings_name"
+            >
+        </activity>
+
+        <activity
+            android:name="CallActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="fullUser"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/CallActivityTheme"
+            />
+
+        <activity
+            android:name=".TutorialActivity"
+            android:theme="@android:style/Theme.Dialog"></activity>
         <activity
             android:name=".ResultScreenActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
