@@ -43,6 +43,7 @@
         android:textSize="36dp"
         android:textColor="#000000"
         android:text="도"
+        android:fontFamily="@font/cookierun_bold"
         android:gravity="center"
         android:visibility="invisible"
         android:layout_marginTop="18dp"
@@ -58,7 +59,50 @@
         android:adjustViewBounds="true"
         android:src="@drawable/hand_default"/>
 
+    <ImageView
+        android:id="@+id/hand1_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_1"/>
 
+    <ImageView
+        android:id="@+id/hand2_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_2"/>
+
+    <ImageView
+        android:id="@+id/hand3_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_3"/>
+
+    <ImageView
+        android:id="@+id/hand4_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_4"/>
+
+    <ImageView
+        android:id="@+id/hand5_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_5"/>
 
 
     <!-- Notice -->

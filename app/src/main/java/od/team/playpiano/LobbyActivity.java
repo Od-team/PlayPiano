@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,8 +23,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 
 import od.team.playpiano.Adapter.RoomListAdapter;
@@ -73,6 +78,15 @@ public class LobbyActivity extends AppCompatActivity {
 
     String room_name;
     AlertDialog alertDialog;
+
+    public static DataInputStream in = null;
+    public static DataOutputStream out = null;
+    public static Socket socket = null;
+
+    char ok;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +101,35 @@ public class LobbyActivity extends AppCompatActivity {
         user_id = getIntent.getStringExtra("user_id");
         Log.d("서비스", "로비 onCreate");
 
+        if (user_id != null && !user_id.equals("teacher")) {
+
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        socket = new Socket("192.168.0.147", 10000);
+                        in = new DataInputStream(socket.getInputStream());
+                        out = new DataOutputStream(socket.getOutputStream());
+
+                        String s = String.valueOf(in.readByte());
+                        ok = (char) Integer.parseInt(s);
+
+                        Log.d("dsfd", "받은 값"+ok);
+
+                    } catch (Exception e) {
+                        Log.d("dsfd", "ㅇㅔ러"+ e.getLocalizedMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+        }
+
         //튜토리얼 액티비티 생성
         setTutorial();
+
+
 
         //지금 서비스가 실행되고 있지 않다면 -> 서비스를 실행한다
         if(!isMyServiceRunning(service.getClass())){
@@ -355,4 +396,5 @@ public class LobbyActivity extends AppCompatActivity {
         Intent intent = new Intent(this, TutorialActivity.class);
         startActivity(intent);
     }
+
 }

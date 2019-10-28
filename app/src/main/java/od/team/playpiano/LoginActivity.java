@@ -38,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
     String co;
     String re;
 
+    public static int soundOn = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

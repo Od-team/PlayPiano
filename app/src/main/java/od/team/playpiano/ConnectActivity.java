@@ -97,44 +97,7 @@ public class ConnectActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Get setting keys.
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        keyprefVideoCallEnabled = getString(R.string.pref_videocall_key);
-        keyprefScreencapture = getString(R.string.pref_screencapture_key);
-        keyprefCamera2 = getString(R.string.pref_camera2_key);
-        keyprefResolution = getString(R.string.pref_resolution_key);
-        keyprefFps = getString(R.string.pref_fps_key);
-        keyprefCaptureQualitySlider = getString(R.string.pref_capturequalityslider_key);
-        keyprefVideoBitrateType = getString(R.string.pref_maxvideobitrate_key);
-        keyprefVideoBitrateValue = getString(R.string.pref_maxvideobitratevalue_key);
-        keyprefVideoCodec = getString(R.string.pref_videocodec_key);
-        keyprefHwCodecAcceleration = getString(R.string.pref_hwcodec_key);
-        keyprefCaptureToTexture = getString(R.string.pref_capturetotexture_key);
-        keyprefFlexfec = getString(R.string.pref_flexfec_key);
-        keyprefAudioBitrateType = getString(R.string.pref_startaudiobitrate_key);
-        keyprefAudioBitrateValue = getString(R.string.pref_startaudiobitratevalue_key);
-        keyprefAudioCodec = getString(R.string.pref_audiocodec_key);
-        keyprefNoAudioProcessingPipeline = getString(R.string.pref_noaudioprocessing_key);
-        keyprefAecDump = getString(R.string.pref_aecdump_key);
-        keyprefOpenSLES = getString(R.string.pref_opensles_key);
-        keyprefDisableBuiltInAec = getString(R.string.pref_disable_built_in_aec_key);
-        keyprefDisableBuiltInAgc = getString(R.string.pref_disable_built_in_agc_key);
-        keyprefDisableBuiltInNs = getString(R.string.pref_disable_built_in_ns_key);
-        keyprefEnableLevelControl = getString(R.string.pref_enable_level_control_key);
-        keyprefDisableWebRtcAGCAndHPF = getString(R.string.pref_disable_webrtc_agc_and_hpf_key);
-        keyprefDisplayHud = getString(R.string.pref_displayhud_key);
-        keyprefTracing = getString(R.string.pref_tracing_key);
-        keyprefRoomServerUrl = getString(R.string.pref_room_server_url_key);
-        keyprefRoom = getString(R.string.pref_room_key);
-        keyprefRoomList = getString(R.string.pref_room_list_key);
-        keyprefEnableDataChannel = getString(R.string.pref_enable_datachannel_key);
-        keyprefOrdered = getString(R.string.pref_ordered_key);
-        keyprefMaxRetransmitTimeMs = getString(R.string.pref_max_retransmit_time_ms_key);
-        keyprefMaxRetransmits = getString(R.string.pref_max_retransmits_key);
-        keyprefDataProtocol = getString(R.string.pref_data_protocol_key);
-        keyprefNegotiated = getString(R.string.pref_negotiated_key);
-        keyprefDataId = getString(R.string.pref_data_id_key);
+        originKey();
 
         setContentView(R.layout.activity_connect);
 
@@ -497,4 +460,45 @@ public class ConnectActivity extends Activity {
             connectToRoom(room_number, false, false, false, 0);
         }
     };
+
+    public void originKey(){
+        // Get setting keys.
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        keyprefVideoCallEnabled = getString(R.string.pref_videocall_key);
+        keyprefScreencapture = getString(R.string.pref_screencapture_key);
+        keyprefCamera2 = getString(R.string.pref_camera2_key);
+        keyprefResolution = getString(R.string.pref_resolution_key);
+        keyprefFps = getString(R.string.pref_fps_key);
+        keyprefCaptureQualitySlider = getString(R.string.pref_capturequalityslider_key);
+        keyprefVideoBitrateType = getString(R.string.pref_maxvideobitrate_key);
+        keyprefVideoBitrateValue = getString(R.string.pref_maxvideobitratevalue_key);
+        keyprefVideoCodec = getString(R.string.pref_videocodec_key);
+        keyprefHwCodecAcceleration = getString(R.string.pref_hwcodec_key);
+        keyprefCaptureToTexture = getString(R.string.pref_capturetotexture_key);
+        keyprefFlexfec = getString(R.string.pref_flexfec_key);
+        keyprefAudioBitrateType = getString(R.string.pref_startaudiobitrate_key);
+        keyprefAudioBitrateValue = getString(R.string.pref_startaudiobitratevalue_key);
+        keyprefAudioCodec = getString(R.string.pref_audiocodec_key);
+        keyprefNoAudioProcessingPipeline = getString(R.string.pref_noaudioprocessing_key);
+        keyprefAecDump = getString(R.string.pref_aecdump_key);
+        keyprefOpenSLES = getString(R.string.pref_opensles_key);
+        keyprefDisableBuiltInAec = getString(R.string.pref_disable_built_in_aec_key);
+        keyprefDisableBuiltInAgc = getString(R.string.pref_disable_built_in_agc_key);
+        keyprefDisableBuiltInNs = getString(R.string.pref_disable_built_in_ns_key);
+        keyprefEnableLevelControl = getString(R.string.pref_enable_level_control_key);
+        keyprefDisableWebRtcAGCAndHPF = getString(R.string.pref_disable_webrtc_agc_and_hpf_key);
+        keyprefDisplayHud = getString(R.string.pref_displayhud_key);
+        keyprefTracing = getString(R.string.pref_tracing_key);
+        keyprefRoomServerUrl = getString(R.string.pref_room_server_url_key);
+        keyprefRoom = getString(R.string.pref_room_key);
+        keyprefRoomList = getString(R.string.pref_room_list_key);
+        keyprefEnableDataChannel = getString(R.string.pref_enable_datachannel_key);
+        keyprefOrdered = getString(R.string.pref_ordered_key);
+        keyprefMaxRetransmitTimeMs = getString(R.string.pref_max_retransmit_time_ms_key);
+        keyprefMaxRetransmits = getString(R.string.pref_max_retransmits_key);
+        keyprefDataProtocol = getString(R.string.pref_data_protocol_key);
+        keyprefNegotiated = getString(R.string.pref_negotiated_key);
+        keyprefDataId = getString(R.string.pref_data_id_key);
+    }
 }
