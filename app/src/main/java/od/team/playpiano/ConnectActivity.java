@@ -91,7 +91,7 @@ public class ConnectActivity extends Activity {
     private String keyprefNegotiated;
     private String keyprefDataId;
 
-    String room_number = "123123456546";
+    String room_number = "124567";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -363,7 +363,7 @@ public class ConnectActivity extends Activity {
             Uri uri = Uri.parse(roomUrl);
             Intent intent = new Intent(this, CallActivity.class);
             intent.setData(uri);
-            intent.putExtra(CallActivity.EXTRA_ROOMID, roomId);
+            intent.putExtra(CallActivity.EXTRA_ROOMID, room_number);
             intent.putExtra(CallActivity.EXTRA_LOOPBACK, loopback);
             intent.putExtra(CallActivity.EXTRA_VIDEO_CALL, videoCallEnabled);
             intent.putExtra(CallActivity.EXTRA_SCREENCAPTURE, useScreencapture);
