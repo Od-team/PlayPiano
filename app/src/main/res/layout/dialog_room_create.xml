@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/room_name_e_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -235,7 +235,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/cookierun_bold"
         android:gravity="center_vertical"
-        android:text="bgm 목록 "
+        android:text="bgm 선택"
         android:textColor="#000000"
         app:layout_constraintStart_toStartOf="@+id/people_num_text"
         app:layout_constraintTop_toBottomOf="@+id/button9" />
@@ -243,7 +243,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="190dp"
+        android:layout_height="150dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginRight="16dp"
@@ -255,7 +255,7 @@
     </android.support.v7.widget.RecyclerView>
 
     <Button
-        android:id="@+id/button11"
+        android:id="@+id/dialog_room_create_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,6 +64,15 @@ public class LobbyActivity extends AppCompatActivity {
 
     String TAG = "tag "+this.getClass().getSimpleName();
 
+    Button dialog_room_create_btn;
+
+    Intent getIntent;
+    public static String user_id;
+
+    EditText room_name_e_text;
+
+    String room_name;
+    AlertDialog alertDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,30 +83,41 @@ public class LobbyActivity extends AppCompatActivity {
         service = new MainService(getApplicationContext());
         serviceIntent = new Intent(getApplicationContext(), MainService.class);
 
+        getIntent = getIntent();
+        user_id = getIntent.getStringExtra("user_id");
+        Log.d("서비스", "로비 onCreate");
+
+        //튜토리얼 액티비티 생성
+        setTutorial();
+
         //지금 서비스가 실행되고 있지 않다면 -> 서비스를 실행한다
         if(!isMyServiceRunning(service.getClass())){
             startService(serviceIntent);
             Log.d("서비스", "로비- startService");
+
+            /** 가장먼저 사용자의 아이디를 전달해준다.**/
+            sendMsg(user_id);
         }
 
-        sendMsg("hi service i'm lobby");
+
 
         init();
         BtnClickListener();
         roomAlertDialog();
 
 
-        Button note_explosion_test_btn = (Button)findViewById(R.id.note_explosion_test_btn);
-        note_explosion_test_btn.setOnClickListener(new View.OnClickListener() {
+        roomListAdapter.setOnClickListener(new RoomListAdapter.MyClickListener() {
             @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(getApplicationContext(), GameScreenActivity.class);
-                startActivity(intent);
+            public void onItemClicked() {
+                if(!user_id.equals("teacher")){
+                    Intent intent = new Intent(LobbyActivity.this, GameRoomActivity.class);
+                    intent.putExtra("room_name",room_name);
+                    startActivity(intent);
+                    finish();
+                }
 
             }
         });
-
 
 
     }
@@ -109,13 +130,14 @@ public class LobbyActivity extends AppCompatActivity {
         filter_play_time_spinner = findViewById(R.id.filter_play_time_spinner);
         room_list_recyclerView = findViewById(R.id.room_list_recyclerView);
 
-        linearLayoutManager = new LinearLayoutManager(LobbyActivity.this, LinearLayoutManager.VERTICAL,false);
+        linearLayoutManager = new LinearLayoutManager(LobbyActivity.this, LinearLayoutManager.VERTICAL,true);
         roomListAdapter = new RoomListAdapter(LobbyActivity.this, roomListData);
         room_list_recyclerView.setLayoutManager(linearLayoutManager);
         room_list_recyclerView.setAdapter(roomListAdapter);
 
-        for(int i = 1; i < 11; i++){
-            roomListData.add(new RecyclerRoomListData(
+
+        for(int i = 5; i > 0; i--){
+            roomListData.add(0,new RecyclerRoomListData(
                     "No."+i,
                     "5학년 " + i + "반 모여라~~",
                     "/ super_man님의 방",
@@ -169,6 +191,9 @@ public class LobbyActivity extends AppCompatActivity {
 
                 people_spinner = view.findViewById(R.id.people_spinner);
                 play_time_spinner = view.findViewById(R.id.play_time_spinner);
+                dialog_room_create_btn = view.findViewById(R.id.dialog_room_create_btn);
+
+                room_name_e_text = view.findViewById(R.id.room_name_e_text);
 
                 people_num_spinner_list.clear();
                 play_time_spinner_list.clear();
@@ -193,9 +218,22 @@ public class LobbyActivity extends AppCompatActivity {
 
                 builder.setView(view);
 
-                AlertDialog alertDialog = builder.create();
+                alertDialog = builder.create();
 
                 alertDialog.show();
+
+                dialog_room_create_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(LobbyActivity.this, GameRoomActivity.class);
+                        intent.putExtra("user_id",user_id);
+                        intent.putExtra("room_name",room_name_e_text.getText().toString());
+                        startActivity(intent);
+                        alertDialog.dismiss();
+                        sendMsg("room_create@@"+room_name_e_text.getText().toString());
+
+                    }
+                });
             }
         });
     }
@@ -227,11 +265,11 @@ public class LobbyActivity extends AppCompatActivity {
 
 
     //현재 서비스가 실행중인지 확인
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
+    private boolean isMyServiceRunning(Class<?> seviceClass) {
 
         ActivityManager manager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
         for(ActivityManager.RunningServiceInfo service: manager.getRunningServices(Integer.MAX_VALUE)){
-            if(serviceClass.getName().equals(service.service.getClassName())){
+            if(seviceClass.getName().equals(service.service.getClassName())){
                 Log.d("서비스", "isMyServiceRunning? "+true);
                 return true;
             }
@@ -267,8 +305,33 @@ public class LobbyActivity extends AppCompatActivity {
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra("message");
-            Log.d("서비스", "Receiver) message received: " + message);
+            final String message = intent.getStringExtra("message");
+            Log.d("서비스", "11111111Receiver) message received: " + message);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if(message.split("@@")[0].equals("room_create")){
+                        room_name = message.split("@@")[1];
+                        roomListData.add(new RecyclerRoomListData(
+                                "No."+11,
+                                message.split("@@")[1],
+                                "teacher님의 방",
+                                "인원 : 1/5",
+                                "/ 클래식",
+                                "/ 30초"));
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            roomListAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                }
+            }).start();
+
+
         }
     };
 
@@ -277,8 +340,19 @@ public class LobbyActivity extends AppCompatActivity {
     void sendMsg(String msg){
         Intent intent = new Intent(getApplicationContext(), MainService.class);
         intent.putExtra("message", msg);
-
         startService(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(LobbyActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    //튜토리얼 액티비티 생성 메서드
+    public void setTutorial(){
+        Intent intent = new Intent(this, TutorialActivity.class);
+        startActivity(intent);
+    }
 }

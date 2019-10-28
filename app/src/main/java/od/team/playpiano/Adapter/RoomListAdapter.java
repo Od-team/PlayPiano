@@ -22,6 +22,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
     ArrayList<RecyclerRoomListData> roomListDataArrayList;
     Context mContext;
+    private MyClickListener listener; // 내가 만든 인터페이스 사용하기위해 필요
 
     public RoomListAdapter(Context mContext, ArrayList<RecyclerRoomListData> roomListDataArrayList) {
         this.mContext = mContext;
@@ -35,6 +36,16 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
         return new RoomListViewHolder(view);
     }
 
+    public interface MyClickListener {
+        // 아이템 전체 부분 클릭
+        void onItemClicked();
+    }
+
+    // 메인에서 setOn클릭리스너
+    public void setOnClickListener(MyClickListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull RoomListViewHolder roomListViewHolder, int position) {
 
@@ -44,6 +55,16 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
         roomListViewHolder.current_room_people.setText(roomListDataArrayList.get(position).getCurrent_room_people());
         roomListViewHolder.genre.setText(roomListDataArrayList.get(position).getGenre());
         roomListViewHolder.play_time.setText(roomListDataArrayList.get(position).getPlay_time());
+
+        roomListViewHolder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(listener != null){
+                    Log.d("Adapter onClick Log", "Adapter onClick!!");
+                    listener.onItemClicked();
+                }
+            }
+        });
 
     }
 

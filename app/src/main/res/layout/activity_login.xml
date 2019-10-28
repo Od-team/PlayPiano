@@ -24,61 +24,40 @@
 
     <Button
         android:id="@+id/login_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="68dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/button_click_effect"
         android:fontFamily="@font/cookierun_bold"
-        android:text="로그인"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText2" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_click_effect"
-        android:fontFamily="@font/cookierun_bold"
-        android:text="회원가입"
+        android:text="입장하기"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/login_btn"
-        app:layout_constraintTop_toTopOf="@+id/login_btn" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_id_e_text"
+        app:layout_constraintVertical_bias="0.035" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/user_id_e_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="472dp"
+        android:layout_marginTop="468dp"
         android:ems="10"
         android:fontFamily="@font/cookierun_bold"
         android:hint="ID를 입력해주세요"
         android:inputType="textPersonName"
-        android:textColorHint="#ffffff"
         android:textColor="#ffffff"
+        android:textColorHint="#ffffff"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.449"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textColor="#ffffff"
-        android:ems="10"
-        android:fontFamily="@font/cookierun_bold"
-        android:hint="PW를 입력해주세요"
-        android:inputType="textPersonName"
-        android:textColorHint="#ffffff"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/editText"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/editText"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
 
 </android.support.constraint.ConstraintLayout>

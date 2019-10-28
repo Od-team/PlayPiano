@@ -9,6 +9,8 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,40 +19,48 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
+
 import android.app.Service;
 
 public class MainService extends Service {
 
 
-    ClientSocket clientSocket;
+    ConnectThread clientSocket;
     Socket socket;
 
-    String TAG = "tag "+this.getClass().getSimpleName();
+    String TAG = "tag :";
 
     Context context;
+    String get_message;
+    String receive_message;
 
+
+    boolean isSocketAlive;
+
+    Thread sender;
+    Thread receiver;
 
     //로그인 시 서비스 실행되는지 확인
     //액티비티와 서비스가 메시지를 주고받는지 확인
 
 
-    public MainService(Context context){
+    public MainService(Context context) {
         super();
         this.context = context;
         Log.d("서비스", "MainService.class 생성자");
 
     }
 
-    public MainService(){};
+    public MainService() {
+    }
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d("서비스", "MainService - onCreate()");
-
         //클라이언트 소켓 연결
-        clientSocket = new ClientSocket();
+        clientSocket = new ConnectThread();
         clientSocket.start();
 
         Log.d("서비스", "클라이언트 소켓 연결");
@@ -63,18 +73,19 @@ public class MainService extends Service {
     //서비스 실행중에 startService 가 호출되면, 서비스의 onCreate()가 호출되는게 아니라 onStartCommand()부터 시작한다
     //intent를 통해서 액티비티로부터 데이터를 전달받는다
     @Override
-    public int onStartCommand (Intent intent,int flags, int startId){
+    public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         Log.d("서비스", "MainService - onStartCommand()");
+        isSocketAlive = true;
 
         try {
 
             //액티비티에서 전달받은 메시지를, 서버에 보낸다
-            if(intent.hasExtra("message")) {
-                String message = intent.getStringExtra("message");
-                Log.d("서비스", "Received a message from Activity: "+message);
+            if (intent.hasExtra("message")) {
+                get_message = intent.getStringExtra("message");
+                Log.d("서비스", "Received a message from Activity: " + get_message);
 
-//                clientSocket.sendMsgToServer(message);
+                clientSocket.sendServer(get_message);
 
             }
 
@@ -86,10 +97,8 @@ public class MainService extends Service {
 
             Log.d(TAG, ex);
         }
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
-
-
 
 
     @Override
@@ -98,18 +107,20 @@ public class MainService extends Service {
 
         //앱이 꺼질 때 소켓을 종료시킨다
 
-        try{
-//            if(socket != null){
-////                sendMsg("closeRoom");
-//                socket.close();
+        try {
+//            if (socket != null) {
+//                sendMsg("closeRoom");
+            if(this.socket != null){
+                Log.d(TAG, "client thread, quit()");
+                isSocketAlive = false;
+            }
+
 //            }
-            clientSocket.quit();
-        }catch (Exception e){
-            Log.d("서비스", "socket closing error: "+e);
+        } catch (Exception e) {
+            Log.d("서비스", "socket closing error: " + e);
         }
+
     }
-
-
 
 
     @Override
@@ -118,27 +129,174 @@ public class MainService extends Service {
     }
 
 
+    // 송, 수신 ConnectThread 시작
+    class ConnectThread extends Thread {
+
+        String str;
+
+        public void sendServer(String msg) {
+            this.str = msg;
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                Log.d("ㄴㄴㄴㄴ", "소켓 연결 요청 전");
+                // 1. 소켓 생성 후 서버 IP에 연결을 요청
+                socket = new Socket("13.209.4.168", 8888);
+//                socket = new Socket("192.168.0.2", 10000);
+
+                Log.d("ㄴㄴㄴㄴ", "소켓 연결 요청 후");
+
+                // 2. inout / output에 해당하는 thread를 각각 만들고 start()합니다
+                sender = new Thread(new ClientSender(socket));
+                receiver = new Thread(new ClientReceiver(socket));
+
+                sender.start();
+                receiver.start();
+
+                Log.d("ㄴㄴㄴㄴ", "'스레드 스타트'");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } // try - catch 끝
+
+        } // run() 끝
+
+    } // ConnectThread끝
 
 
+    // 송신 클래스
+    class ClientSender extends Thread {
 
+        // 클라 소켓
+        Socket socket;
 
+        // 내보낼 메세지 객체
+        DataOutputStream out;
 
-    class ClientSocket extends Thread{
+        // [ 사용자에 할당된 소켓 ] 과 [ 사용자 이름 ] 이 매개변수로 들어옴
+        ClientSender(Socket socket) {
+            this.socket = socket;
 
+            try {
+                out = new DataOutputStream(this.socket.getOutputStream());
 
-        private boolean isSocketAlive = true;
-//        private boolean isNewRoom;
-//        private String friendInfo;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("ㄴㄴㄴㄴ", "클라센더 생성자 에러");
+            } // try - catch 끝
+        } // ClientSender 끝
+
+        @Override
+        public void run() {
+            try {
+                Log.d("ㄴㄴㄴㄴ", "드옴?");
+                if (out != null) {
+                    try{
+                        // 방의 이름 / 사용자 이름을 가지고 서버로가서 방을 생성해달라고 한다.
+                        out.writeUTF("user_id@@" + LobbyActivity.user_id);
+                    }catch (Exception d){
+                        Log.d("ㄴㄴㄴㄴ", "제일 첫번째 메세지 에러 : " + d.getMessage());
+                    }
+                }
+
+                // 메시지를 서버로 보냅니다.(무한루프 돌면서 OutputStream에서 가져올게 있으면, wrtieUTF()를 실행합니다)
+                while (isSocketAlive && out != null) {
+
+                    if (clientSocket.str != null) {
+                        Log.d("ㄴㄴㄴㄴ", "6666");
+                        // 방 이름, 방 들어오는 사람, 메세지 내용
+                        out.writeUTF(clientSocket.str);
+                        clientSocket.str = null;
+                        Log.d("ㄴㄴㄴㄴ", "7777");
+                    }
+                }
+
+            } catch (IOException e) {
+                Log.d("ㄴㄴㄴㄴ", "송신 연결 끊김");
+            }
+        }
+    }
+
+    class ClientReceiver extends Thread {
+        Socket socket;
+        DataInputStream in;
+
+        ClientReceiver(Socket socket) {
+            try {
+                this.socket = socket;
+                in = new DataInputStream(this.socket.getInputStream());
+                Log.d("ㄴㄴㄴㄴ", "1 : ");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("ㄴㄴㄴㄴ", "2 : ");
+
+            }
+        }
+
+        @Override
+        public void run() {
+            while (isSocketAlive && in != null) {
+                try {
+
+                    // outputStream으로 온 데이터를 read합니다
+                    receive_message = in.readUTF();
+
+                    String[] str = new String[100];
+                    str = receive_message.split("@@");
+
+                    Log.d("ㄴㄴㄴㄴ", "3 : " + receive_message.toString());
+
+                    if (str[0].equals("room_create")) {
+                        sendMsgToLobby(str[1]+"@@"+str[2]);
+                    }
+
+                    if (str[0].equals("gameRoom")) {
+                        sendMsgToGameRoom(str[1]);
+                    }
+                    if (str[0].equals("ready")) {
+                        sendMsgToGameRoom(str[1]);
+                    }
+                    if (str[0].equals("start")) {
+                        sendMsgToGameRoom(str[1]);
+                    }
+
+                } catch (IOException e) {
+                    Log.d("ㄴㄴㄴㄴ", "수신 연결 끊김");
+                }
+
+            }
+        }
+
+        /*액티비티에 메시지를 보낸다. 액티비티마다 브로드캐스트 달아줘야함*/
+        private void sendMsgToLobby(String message) {
+            Log.d(TAG, "Broadcasting message to lobby activity");
+            Intent intent = new Intent("lobby_event");
+            intent.putExtra("message", message);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        }
+
+        /*액티비티에 메시지를 보낸다. 액티비티마다 브로드캐스트 달아줘야함*/
+        private void sendMsgToGameRoom(String message) {
+            Log.d(TAG, "Broadcasting message to lobby activity");
+            Intent intent = new Intent("gameRoom_event");
+            intent.putExtra("message", message);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        }
+    }
+
+//    class ClientSocket extends Thread{
 //
-//        private BufferedWriter bufferedWriter;
-//        private BufferedReader bufferedReader;
-//
-////        private int roomId;
 //
 //
 //        // 서버에 메시지 보내기
 //        // 네트워크에 연결할 때는 서브 쓰레드를 이용해야 한다
 //        public void sendMsgToServer(final String msg){
+//
+//            /** 가장먼저 사용자의 아이디가 들어온다.**/
 //
 //            Log.d(TAG, "sendMsg() to server. message:"+msg);
 //
@@ -165,36 +323,24 @@ public class MainService extends Service {
 //        }
 //
 //
-        /*액티비티에 메시지를 보낸다. 액티비티마다 브로드캐스트 달아줘야함*/
-        private void sendMsgToLobby(String message){
-            Log.d(TAG, "Broadcasting message to lobby activity");
-            Intent intent = new Intent("lobby_event");
-            intent.putExtra("message", message);
-            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-        }
-
-//        private void sendMsgToMain(String message){
-//            Log.d(TAG, "Broadcasting message");
-//            Intent intent = new Intent("roomList_event");
+//        /*액티비티에 메시지를 보낸다. 액티비티마다 브로드캐스트 달아줘야함*/
+//        private void sendMsgToLobby(String message){
+//            Log.d(TAG, "Broadcasting message to lobby activity");
+//            Intent intent = new Intent("lobby_event");
 //            intent.putExtra("message", message);
 //            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 //        }
-//        /*------------------------------------------------------------*/
 //
+//        @Override
+//        public void run() {
 //
-//
-        @Override
-        public void run() {
-
-            sendMsgToLobby("hi lobby i'm service");
-
 //            try {
 //                //포트 고쳐야함
-//                socket = new Socket("13.209.4.168", 8000);
+//                socket = new Socket("13.209.4.168", 8888);
 //                Log.d(TAG, "connected to server");
 //
 //                InputStream is = socket.getInputStream();
-//                OutputStream os = socket.getOutputStream();
+//                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 //                InputStreamReader isr = new InputStreamReader(is);
 //                bufferedReader = new BufferedReader(isr); //서버로부터 메시지를 읽어들이는 객체
 //
@@ -202,7 +348,7 @@ public class MainService extends Service {
 //                bufferedWriter = new BufferedWriter(osw); //서버에 메시지를 쓰는 객체
 //
 //                //서버에 연결 메시지 전송
-//                sendMsgToServer("connect"+user_id);
+//                sendMsgToServer("user_id@@"+LobbyActivity.user_id);
 //
 //            } catch (Exception e) {
 //                Log.d(TAG, "socket connection error");
@@ -215,649 +361,27 @@ public class MainService extends Service {
 //            }
 //
 //            try {
+//
 //                //클라이언트의 메인 쓰레드는 서버로부터 데이터 읽어들이는 것만 반복
-//                while(isSocketAlive) {
+//                while((line = (bufferedReader.readLine()) )!= null) {
 //
 //                    //서버에서 데이터를 보낼 때, 데이터를 '/'을 기준으로 한 문장으로 구성해서 보냄
 //                    //맨 앞 문자열: 클라이언트에게 보내는 신호(어떤 행동을 해라)
 //                    //그다음부터는 화면에 띄워줄 데이터
-//                    String line = bufferedReader.readLine();
-//                    Log.d(TAG, "readMsg(). message: "+line);
-//
-//                    String[] line_array = line.split("/");
-//                    String signal = line_array[0];
-//
-//                    final String content;
-//
-//                    boolean isChatForeground = false;
-//                    boolean isMainForeground = false;
-//                    boolean isPikaForeground = false;
-//
-//                    isChatForeground = Function.isForegroundActivity(getApplicationContext(), ChatActivity.class);
-//                    isMainForeground = Function.isForegroundActivity(getApplicationContext(), MainActivity.class);
-//                    isPikaForeground = Function.isForegroundActivity(getApplicationContext(), PikachuDetectorActivity.class);
-//
-//                    switch(signal){
-//
-//                        //피카츄 사진이 다 분석되었다는 알림
-//                        //pikachu_output/success or fail/filename
-//                        case "pikachu_output":
-//
-//                            //해당 화면을 보고 있을 때에만 결과를 띄워준다
-//                            if(isPikaForeground){
-//                                sendMsgToPikachuDetector(line);
-//                            }
-//
-//                            break;
-//                        //방이 만들어졌다는 알림
-//                        //room_created/roomId/방이름/인원/memberInfo(참여자id;username..)
-//                        case "room_created":
-//                            int roomId = Integer.valueOf(line_array[1]);
-//                            String roomName = line_array[2];
-//                            int number_of_members = Integer.valueOf(line_array[3]);
-//                            String memberInfo_string = line_array[4];
-//
-//
-//                            //방 정보를 내부 저장소에 저장한다
-//                            String currentTime = Function.getCurrentTime();
-//                            //서버가 정해준 room id를 직접 저장해야 한다. auto increment(x)
-//                            dbHelper.insert_chatRooms(roomId, roomName, memberInfo_string, currentTime);
-//
-////                        String result = dbHelper.getResult_table_chatRooms();
-////                        Log.d(TAG, "saved new room. result="+result);
-//
-//                            //현재 클라이언트 = 방 개설자일때. 이 때 사용자의 foreground activity는 무조건 ChatActivity
-//                            int room_master_id = Integer.valueOf(memberInfo_string.split(";")[0]);
-//                            if(room_master_id == user_id){
-//                                Log.d(TAG, "this client created the room");
-//
-//                                //채팅화면으로 방 id를 보낸다
-//                                sendMsgToChat("room_created/"+roomId);
-//
-//                                //방목록에 아이템을 추가한다
-//                                Main_Fragment2.roomItemList.add(0, new RoomListItem(roomName, number_of_members,
-//                                        "", currentTime, roomId, 0));
-//
-//                                //ChatActivity에 방 정보를 전달한다
-//                                String msg_roomInfo = "";
-//                                if(number_of_members == 2){ //1대1 채팅의 경우: 방 인원을 발송하지 않는다
-//                                    msg_roomInfo = "roomInfo/"+roomName+"/"+memberInfo_string;
-//                                }else{
-//                                    msg_roomInfo = "roomInfo/"+roomName+" ("+number_of_members+")"+"/"+memberInfo_string;
-//                                }
-//                                sendMsgToChat(msg_roomInfo);
-//
-//                            }else{ //현재 클라이언트 = 초대된 사람일 때. 이 때 사용자의 foreground activity는 불명. 확인해야 한다
-//                                Log.d(TAG, "this client is invited to the room");
-//
-//                                try{
-//                                    // 방목록에 아이템을 추가한다
-//                                    // 앱이 background에 있을 경우: onResume()에서 datasetChanged()가 호출된다
-//                                    Main_Fragment2.roomItemList.add(0, new RoomListItem(roomName, number_of_members,
-//                                            "", currentTime, roomId, 0));
-//                                }catch (Exception e){
-//                                    //앱이 꺼져있는데 서비스만 돌고 있을 경우, 오류가 날 수 있다
-//                                    StringWriter sw = new StringWriter();
-//                                    e.printStackTrace(new PrintWriter(sw));
-//                                    String ex = sw.toString();
-//
-//                                    Log.d(TAG,ex);
-//                                }
-//
-//                                if(isMainForeground){
-//                                    Log.d(TAG, "MainActivity is at foreground");
-//
-//                                    //방목록 어댑터를 업데이트 하라고 메시지를 보낸다
-//                                    sendMsgToMain("inserted/");
-//                                }
-//                            }
-//
-//                            break;
-//
-//                        //이 사용자가 기존에 있던 방에 다시 들어갔을 때, 서버로부터 방 정보를 수신받는다
-//                        //이 사용자한테만 오는 알림이다
-//                        case "roomInfo":
-//
-//                            // 방이름 (참여인원) 참여자1, 참여자2, 참여자3
-//                            content = line_array[1];
-//
-//                            if(isChatForeground){ //예기치않게 ChatActivity 가 꺼졌을 경우를 대비, 예외처리
-//
-//                                sendMsgToChat(line); //signal이 포함된 전체 메시지를 보낸다
-//                                //챗화면에 메시지 띄워주기
-//                            }
-//
-//                            break;
-//
-//                        case "msg": //메시지 알림(내가 보낸 메시지 + 남이 보낸 메시지 + 서버 메시지)
-////                        msg/roomId/sender_id/sender_username/message
-//
-//                            int roomId_msg = Integer.valueOf(line_array[1]);
-//                            int sender_id = Integer.valueOf(line_array[2]);
-//                            final String sender_username = line_array[3];
-//                            String message = line_array[4];
-//
-//
-//                            //이미지 or 비디오 파일을 담은 메시지인지 확인한다
-//                            //image!-!파일이름1;파일이름2;파일이름3
-//                            //video!-!thumbnail_filename!-!video_filename
-//                            boolean isImage = false;
-//                            String filename_string = "";
-//
-//                            //비디오일 경우 필요한 변수
-//                            boolean isVideo = false;
-//                            String thumbnail_filename = "";
-//                            String video_filename = "";
-//
-//                            int number_of_files = 0; //사진 개수
-//                            try{
-//                                String[] text_array = message.split("!-!");
-//                                if(text_array[0].equals("image")){
-//
-//                                    isImage = true;
-//
-//                                    //파일이름을 가져온다. 파일이름1;파일이름2;파일이름3..
-//                                    filename_string = text_array[1];
-//
-//                                    //사진 개수
-//                                    number_of_files = filename_string.split(";").length;
-//
-//                                    //푸쉬알람에 띄워줄 내용을 지정한다
-//                                    if(number_of_files == 1){
-//                                        message = number_of_files +" Photo";
-//                                    }else{
-//                                        message = number_of_files +" Photos";
-//                                    }
-//
-//                                }else if(text_array[0].equals("video")){
-////                                msg/roomId/id/username/video!-!thumbnail_filename!-!video_filename
-//
-//                                    isVideo = true;
-//
-//                                    thumbnail_filename = text_array[1];
-//                                    video_filename = text_array[2];
-//
-//                                    //푸쉬알람에 띄워줄 내용을 지정한다
-//                                    message = "1 Video";
-//                                }
-//
-//
-//
-//                            }catch (Exception e){
-//                                StringWriter sw = new StringWriter();
-//                                e.printStackTrace(new PrintWriter(sw));
-//                                String ex = sw.toString();
-//
-//                                Log.d(TAG,ex);
-//                            }
-//
-//                            String curTime_msg = Function.getCurrentTime();//현재 시각
-//
-//                            int unreadMsgCount = dbHelper.get_unreadMsgCount(roomId_msg); //사용자가 이 방에서 안 읽은 메시지 개수(원래 개수)
-//
-//                            int isRead = 0; // 1=true, 0=false 사용자가 이 메시지를 읽었는지 안 읽었는지 표시
-//
-//                            try{
-//                                //공통: 메시지 저장, roomItemList 업데이트(insert 알림x)
-//
-//                                //1. 메시지를 내부 저장소에 저장한다
-//
-//                                //사용자가 지금 채팅방에서 이 메시지를 바로 읽을 수 있는 경우 -> 이 메시지를 읽은 것으로 처리
-//                                if(isChatForeground && ChatActivity.roomId == roomId_msg){
-//                                    isRead = 1;
-//
-//                                }else{ //그렇지 않은 모든 경우 -> 이 메시지는 읽지 않은 것으로 처리 / 이 방에서 사용자가 안 읽은 메시지 개수++
-//
-//                                    //서버메시지는 읽음처리의 대상이 아님. 이미 읽은 것으로 저장한다
-//                                    if(sender_id == 0 && sender_username.equals("server")){
-//                                        isRead = 1;
-//
-//                                    }else if(sender_id != user_id){ //내가 보낸 메시지가 아닐 경우
-//                                        //푸쉬 알람을 띄워준다
-//                                        //푸쉬알람 띄우는 조건
-//                                        // 1. 지금 해당 채팅방을 보고 있지 않으면서
-//                                        // 2. 서버메시지도, 내가 보낸 메시지도 아닐 경우 (남이 보낸 메시지일 경우)
-//
-//                                        showNotification(sender_username, message, roomId_msg);
-//
-//                                    }
-//
-//
-//                                    if(isImage){
-//                                        unreadMsgCount += number_of_files;
-//                                    }else{
-//                                        unreadMsgCount += 1;
-//                                    }
-//                                }
-//
-//
-//                                //메시지 저장
-//                                long curTime_long = System.currentTimeMillis();
-//                                if(isImage){ //이미지일 경우
-//
-//                                    //string 형태로 이어져있는 파일 이름을 그대로 저장한다
-//                                    // : 다중이미지 1개 = 메시지 1개 원칙
-//                                    //filename_string = 파일이름1;파일이름2;파일이름3..
-//                                    dbHelper.insert_chatLogs(roomId_msg, sender_id, sender_username, message, filename_string, curTime_long, isRead);
-//
-//                                }else if(isVideo){ //비디오일 경우
-//
-//                                    String video_path_server = Function.domain+"/images/"+roomId_msg+"/"+video_filename;
-//                                    dbHelper.insert_chatLogs_with_videoServePath(roomId_msg, sender_id, sender_username, message, thumbnail_filename, curTime_long, isRead, video_path_server);
-//
-//                                }else{ //텍스트 메시지일 경우
-//                                    dbHelper.insert_chatLogs(roomId_msg, sender_id, sender_username, message, "N", curTime_long, isRead);
-//                                }
-//
-//
-////                            String result_msg = dbHelper.getResult_table_chatLogs();
-////                            Log.d(TAG, "chat_logs table="+result_msg);
-//
-//
-//                                //2. roomList를 업데이트한다 -- 서버메시지 제외
-//                                if(sender_id == 0 && sender_username.equals("server")){ }
-//                                else{
-//                                    //2-1. sqlite 에서 방 정보를 불러온다
-//                                    String roomInfo = dbHelper.get_chatRoomInfo(roomId_msg);
-//                                    String [] roomInfo_array = roomInfo.split("/");
-//                                    String roomName_msg = roomInfo_array[1];
-//                                    String memberInfo = roomInfo_array[3];
-//                                    String[] memberInfo_array = memberInfo.split(";");
-//                                    int number_of_members_msg = memberInfo_array.length/2;
-//
-//
-//                                    //2-2. 맨 위에 아이템을 추가하고, 기존 아이템을 삭제한다
-//                                    Main_Fragment2.roomItemList.add(0, new RoomListItem(roomName_msg, number_of_members_msg,
-//                                            message, curTime_msg, roomId_msg, unreadMsgCount));
-//
-//                                    for(int i=Main_Fragment2.roomItemList.size()-1; i>0; i--){
-//                                        RoomListItem item = Main_Fragment2.roomItemList.get(i);
-//                                        if(item.getRoomId() == roomId_msg){
-//                                            Main_Fragment2.roomItemList.remove(i);
-//                                            Log.d(TAG, i+" item is removed from roomItemList");
-//                                        }
-//                                    }
-//
-//
-//                                    //db에 방 정보를 업데이트한다(updateTime)
-//                                    dbHelper.room_updateTime(roomId_msg, curTime_msg);
-//                                }
-//
-//
-//                            }catch (Exception e){
-//                                //앱이 꺼져있는데, 서비스가 돌면서 roomItemList를 업데이트 하면 오류가 날 수 있다
-//                                StringWriter sw = new StringWriter();
-//                                e.printStackTrace(new PrintWriter(sw));
-//                                String ex = sw.toString();
-//
-//                                Log.d(TAG,ex);
-//                            }
-//
-//
-//                            //사용자가 현재 채팅화면을 보고 있을 때
-//                            if(isChatForeground){
-//
-//                                //메인화면의 roomItemList를 업데이트한다 - 위에서 완료
-//                                //insert 메시지는 보내지 않는다. 이 채팅화면이 종료되면, 방목록화면이 onResume() 되면서 adapter가 refresh된다
-//
-//                                //지금 보고있는 채팅방 = 메시지가 발신된 채팅방일 때
-//                                //(이 메시지 = 이 방에서 보낸 메시지)
-//                                if(ChatActivity.roomId == roomId_msg){
-//
-//                                    //채팅 액티비티로 메시지를 전달한다
-//                                    sendMsgToChat(line);
-//
-//                                    //푸쉬 알람을 띄우면 안 된다
-//
-//                                }else{ //채팅방이 일치하지 않을 때
-//                                    // (이 메시지 = 다른 방에서 보낸 메시지)
-//
-//                                    //채팅 화면으로 메시지를 전달해서는 안 된다
-//
-//                                }
-//
-//                            }else if(isMainForeground){ //사용자가 메인화면을 보고 있다면
-//
-//                                //방목록 어댑터를 업데이트 하라고 메시지를 보낸다
-//                                sendMsgToMain("inserted/");
-//
-//
-//                                /*
-//                                 * 1. Fragment2(방목록)을 보고 있을 때
-//                                 * -> roomItemList에서 roomId가 동일한 것을 찾는다. 최신 메시지와 시각을 업데이트한다. 아이템 순서를 맨위로 끌어올린다
-//                                 * -> 방목록 어댑터를 업데이트 하라고 메시지를 보낸다. sendMsgToMain("inserted/");
-//                                 *
-//                                 * 2. 나머지 1,3을 보고 있을 때
-//                                 * -> 위와 동일하다. roomItemList업데이트 시켜줘야 하고
-//                                 * fragment 이동으로는 리사이클러뷰 업데이트가 안 되므로, 동일하게 insert 메시지를 보낸다
-//                                 * */
-//
-//                            }
-//
-//                            break;
-//
-//                        case "new_member": //참여하던 방에 누가 초대되었다는 메시지
-//
-//                            int roomId_newMember = Integer.valueOf(line_array[1]);
-//                            String invited_memberInfo = line_array[2];
-//                            String[] invited_memberInfo_array = invited_memberInfo.split(";");
-//                            int numberOfInvitedMembers = invited_memberInfo_array.length/2;
-//
-//
-//                            /*-------1. db 업데이트(방 정보)--------*/
-//                            String members_string = "";
-//                            String roomName_origin = "";
-//                            Cursor cursor = dbHelper.db.rawQuery("SELECT room_name, members FROM chat_rooms WHERE room_id='" + roomId_newMember + "';", null);
-//                            while (cursor.moveToNext()) {
-//                                roomName_origin = cursor.getString(0);
-//                                members_string = cursor.getString(1);
-//                            }
-//
-//                            String[] memberInfo_array = members_string.split(";");
-//                            int numberOfMembers_origin = memberInfo_array.length/2; //기존 채팅 참여자 수
-//
-//                            String members_updated = members_string+";"+invited_memberInfo;
-//
-//
-//                            String roomName_updated = roomName_origin; //원래 단체채팅인 경우: 기존이름(group chat이나 사용자 지정 이름)에서 변하지 않는다
-//
-//                            if(numberOfMembers_origin == 2){ //원래 1대1 채팅인데 거기에 사람을 초대했다면
-//                                roomName_updated = "Group chat"; //방 이름 = 그룹챗
-//
-//                            }else if(numberOfMembers_origin == 1 && numberOfInvitedMembers == 1){ //혼자 있는 방에 1명을 추가했다면
-//                                roomName_updated = invited_memberInfo_array[1]; //방 이름 = 상대방 이름
-//
-//                            }else if(numberOfMembers_origin == 1 && numberOfInvitedMembers > 1){ //혼자 있는 방에 여러 명을 추가했다면
-//                                roomName_updated = "Group chat"; //방 이름 = 그룹챗
-//                            }
-//
-//                            Log.d("초대", "MainService) db에 저장하기 직전. roomName_updated="+roomName_updated);
-//                            //db 업데이트(방이름, 멤버정보)
-//                            dbHelper.db.execSQL("UPDATE chat_rooms SET room_name = '"+roomName_updated+"', members='" + members_updated + "' WHERE room_id='" + roomId_newMember + "';");
-//
-//                            //방 정보가 잘 업데이트 되었는지 확인
-//                            dbHelper.get_chatRoomInfo(roomId_newMember);
-//
-//
-//                            /*-------2. 방 목록 화면 업데이트--------*/
-//                            //방목록 아이템을 업데이트한다(roomName, 인원)
-//
-//                            int total_numberOfMembers = numberOfMembers_origin+numberOfInvitedMembers;
-//                            try{
-//                                for(RoomListItem room : Main_Fragment2.roomItemList){
-//                                    if(room.getRoomId() == roomId_newMember){
-//
-//                                        room.setRoomName(roomName_updated);
-//                                        room.setNumberOfMembers(total_numberOfMembers);
-//                                    }
-//                                }
-//                            }catch (Exception e){
-//                                //앱이 꺼져있는데, 서비스가 돌면서 roomItemList를 업데이트 하면 오류가 날 수 있다
-//                                StringWriter sw = new StringWriter();
-//                                e.printStackTrace(new PrintWriter(sw));
-//                                String ex = sw.toString();
-//
-//                                Log.d(TAG,ex);
-//                            }
-//
-//
-//
-//
-//                            //사용자가 현재 채팅화면을 보고 있을 때
-//                            if(isChatForeground){
-//
-//                                //메인화면의 roomItemList를 업데이트한다 - 위에서 완료
-//                                //insert 메시지는 보내지 않는다. 이 채팅화면이 종료되면, 방목록화면이 onResume() 되면서 adapter가 refresh된다
-//
-//
-//                                //지금 보고있는 채팅방 = 메시지가 발신된 채팅방일 때
-//                                //(이 메시지 = 이 방에서 보낸 메시지)
-//                                if(ChatActivity.roomId == roomId_newMember){
-//                                    /*-------3. 채팅화면 제목 업데이트--------*/
-//                                    /*-------4. 채팅화면의 멤버목록 업데이트--------*/
-//
-//
-//                                    //ChatActivity에 방 정보를 전달한다
-//                                    String msg_roomInfo = "";
-//                                    if(total_numberOfMembers == 2){ //1대1 채팅의 경우: 방 인원을 발송하지 않는다
-//                                        msg_roomInfo = "roomInfo_plus/"+roomName_updated+"/"+invited_memberInfo;
-//                                    }else{
-//                                        msg_roomInfo = "roomInfo_plus/"+roomName_updated+" ("+total_numberOfMembers+")"+"/"+invited_memberInfo;
-//                                    }
-//                                    Log.d("초대", "MainService) 채팅화면으로 roomInfo 보내기 직전. roomInfo_plus:"+msg_roomInfo);
-//                                    sendMsgToChat(msg_roomInfo);
-//
-//
-//                                }else{ //채팅방이 일치하지 않을 때
-//                                    // (이 메시지 = 다른 방과 관련된 메시지)
-//
-//                                    //채팅 화면으로 메시지를 전달해서는 안 된다
-//                                }
-//
-//                            }else if(isMainForeground){ //사용자가 메인화면을 보고 있다면
-//
-//                                //방목록 어댑터를 업데이트 하라고 메시지를 보낸다
-//                                sendMsgToMain("inserted/");
-//
-//                            }
-//
-//
-//
-//                            break;
-//
-//                        case "member_out": //참여하던 방에서 누가 나갔다는 메시지
-//                            //member_out/방id/떠난사람 id
-//
-//                            int out_roomId = Integer.valueOf(line_array[1]);
-//                            int out_memberId = Integer.valueOf(line_array[2]);
-//
-//                            Log.d("방나감", "누군가 방을 나갔다고 함. 나간사람 id = "+out_memberId+" / 방 id = "+out_roomId);
-//
-//                            /*-------1. db 업데이트(방 정보)--------*/
-//                            String out_members_string = "";
-//                            String out_roomName_origin = "";
-//                            Cursor out_cursor = dbHelper.db.rawQuery("SELECT room_name, members FROM chat_rooms WHERE room_id='" + out_roomId + "';", null);
-//                            while (out_cursor.moveToNext()) {
-//                                out_roomName_origin = out_cursor.getString(0);
-//                                out_members_string = out_cursor.getString(1);
-//                            }
-//
-//                            String[] out_memberInfo_array = out_members_string.split(";");
-//                            int out_numberOfMembers_origin = out_memberInfo_array.length/2; //기존 채팅 참여자 수
-//
-//                            //원래 있던 사용자를 멤버정보에서 삭제해야함 (id로 찾음 -> id와 닉넴을 동시 삭제)
-//                            int index = 10000;
-//                            for(int i=0; i<out_memberInfo_array.length; i++){
-//
-//                                if(i%2==0){ //참여자 목록에서 나간사람의 id를 찾는다
-//                                    if(Integer.valueOf(out_memberInfo_array[i]) == out_memberId){
-//                                        index = i;
-//                                        break;
-//                                    }
-//                                }
-//                            }
-//
-//                            String out_members_updated = "";
-//                            for(int i=0; i<out_memberInfo_array.length; i++){
-//
-//                                if(i==index || i==index+1){ }else{
-//                                    out_members_updated += out_memberInfo_array[i]+";";
-//                                }
-//                            }
-//
-//                            //마지막 ';' 제거
-//                            out_members_updated = out_members_updated.substring(0, out_members_updated.length()-1);
-//
-//                            Log.d("방나감", "memberInfo 업데이트: "+out_members_string+" -> "+out_members_updated);
-//
-//
-//                            String out_roomName_updated = out_roomName_origin; //원래 단체채팅인 경우: 기존이름(group chat이나 사용자 지정 이름)에서 변하지 않는다
-//
-//                            if(out_numberOfMembers_origin == 2){ //원래 1대1 채팅인데 거기서 상대방이 나갔다면 -> 현재 1명
-//                                out_roomName_updated = "No users"; //방 이름 = No users
-//                            }else if(out_numberOfMembers_origin == 3){ //3명짜리 단체채팅에서 한 명 나간 상황 -> 현재 2명
-//
-//                                //이름을 지정한 적이 있다면 그 이름 그대로 남겨둠
-//
-//                                //지정한 적 없을 경우 -> 채팅방 이름을 상대방의 이름으로 변경
-//                                if(out_roomName_origin.equals("Group chat")){
-//
-//                                    String[] out_memberInfo_updated = out_members_updated.split(";");
-//                                    for(int i=0; i<out_memberInfo_updated.length; i++){
-//
-//                                        if(i%2==1){ //사용자 2명중에서, 자신의 이름과 다른 이름 = 상대방 이름 = 방 이름
-//                                            if(!out_memberInfo_updated[i].equals(username)){
-//                                                out_roomName_updated = out_memberInfo_updated[i];
-//                                                break;
-//                                            }
-//                                        }
-//                                    }
-//
-//                                }
-//                            }
-//
-//                            Log.d("방나감", "db에 저장하기 직전. roomName: "+out_roomName_origin+" -> "+out_roomName_updated);
-//
-//                            //db 업데이트(방이름, 멤버정보)
-//                            dbHelper.db.execSQL("UPDATE chat_rooms SET room_name = '"+out_roomName_updated+"', members='" + out_members_updated + "' WHERE room_id='" + out_roomId + "';");
-//
-//                            //방 정보가 잘 업데이트 되었는지 확인
-//                            dbHelper.get_chatRoomInfo(out_roomId);
-//
-//
-//                            /*-------2. 방 목록 화면 업데이트--------*/
-//                            //방목록 아이템을 업데이트한다(roomName, 인원)
-//
-//                            int out_total_numberOfMembers = out_numberOfMembers_origin - 1;
-//                            try{
-//                                for(RoomListItem room : Main_Fragment2.roomItemList){
-//                                    if(room.getRoomId() == out_roomId){
-//
-//                                        room.setRoomName(out_roomName_updated);
-//                                        //방 인원이 3명 미만이면, 화면에 보여주지 않음 - RoomListAdapter에서 처리
-//                                        room.setNumberOfMembers(out_total_numberOfMembers);
-//                                    }
-//                                }
-//                            }catch (Exception e){
-//                                //앱이 꺼져있는데, 서비스가 돌면서 roomItemList를 업데이트 하면 오류가 날 수 있다
-//                                StringWriter sw = new StringWriter();
-//                                e.printStackTrace(new PrintWriter(sw));
-//                                String ex = sw.toString();
-//
-//                                Log.d(TAG,ex);
-//                            }
-//
-//
-//
-//                            //사용자가 현재 채팅화면을 보고 있을 때
-//                            if(isChatForeground){
-//
-//                                //메인화면의 roomItemList를 업데이트한다 - 위에서 완료
-//                                //insert 메시지는 보내지 않는다. 이 채팅화면이 종료되면, 방목록화면이 onResume() 되면서 adapter가 refresh된다
-//
-//
-//                                //지금 보고있는 채팅방 = 메시지가 발신된 채팅방일 때
-//                                //(이 메시지 = 이 방에서 보낸 메시지)
-//                                if(ChatActivity.roomId == out_roomId){
-//                                    /*-------3. 채팅화면 제목 업데이트--------*/
-//                                    /*-------4. 채팅화면의 멤버목록 업데이트--------*/
-//
-//
-//                                    //ChatActivity에 방 정보를 전달한다
-//                                    String out_msg_roomInfo = "";
-//                                    if(out_total_numberOfMembers <= 2){ //1대1 채팅, 혼자방의 경우: 방 인원을 발송하지 않는다
-//
-//                                        //roomInfo_minus/방이름/나간사람id
-//                                        out_msg_roomInfo = "roomInfo_minus/"+out_roomName_updated+"/"+out_memberId;
-//                                    }else{
-//                                        //roomInfo_minus/방이름 (인원)/나간사람id
-//                                        out_msg_roomInfo = "roomInfo_minus/"+out_roomName_updated+" ("+out_total_numberOfMembers+")"+"/"+out_memberId;
-//                                    }
-//                                    Log.d("방나감", "MainService) 채팅화면으로 roomInfo 보내기 직전. roomInfo_plus:"+out_msg_roomInfo);
-//                                    sendMsgToChat(out_msg_roomInfo);
-//
-//
-//                                }else{ //채팅방이 일치하지 않을 때
-//                                    // (이 메시지 = 다른 방과 관련된 메시지)
-//
-//                                    //채팅 화면으로 메시지를 전달해서는 안 된다
-//                                }
-//
-//                            }else if(isMainForeground){ //사용자가 메인화면을 보고 있다면
-//
-//                                //방목록 어댑터를 업데이트 하라고 메시지를 보낸다
-//                                sendMsgToMain("inserted/");
-//
-//                            }
-//
-//
-//
-//                            break;
-//
-//                        case "invited": //이 사용자가 어떤 방에 초대되었다는 메시지
-//                            //invited/방id/방이름/memberInfo
-//
-//                            int roomId_invited = Integer.valueOf(line_array[1]);
-//                            String roomName_invited = line_array[2];
-//                            String allMemberInfo_string = line_array[3];
-//
-//                            String[] allMemberInfo_array = allMemberInfo_string.split(";");
-//                            int numberOfAllMembers = allMemberInfo_array.length/2;
-//
-//                            Log.d(TAG, "the client is invited to "+roomName_invited);
-//
-//                            //방 정보를 내부 저장소에 저장한다
-//                            String currentTime_invited = Function.getCurrentTime();
-//                            //서버가 정해준 room id를 직접 저장해야 한다. auto increment(x)
-//                            dbHelper.insert_chatRooms(roomId_invited, roomName_invited, allMemberInfo_string, currentTime_invited);
-//
-//
-//                            //사용자의 foreground activity는 불명. 확인해야 한다
-//                            try{
-//                                // 방목록에 아이템을 추가한다
-//                                // Fragment2의 onResume()에서 datasetChanged()가 호출된다
-//                                Main_Fragment2.roomItemList.add(0, new RoomListItem(roomName_invited, numberOfAllMembers,
-//                                        "", currentTime_invited, roomId_invited, 0));
-//                            }catch (Exception e){
-//                                //앱이 꺼져있는데 서비스만 돌고 있을 경우, 오류가 날 수 있다
-//                                StringWriter sw = new StringWriter();
-//                                e.printStackTrace(new PrintWriter(sw));
-//                                String ex = sw.toString();
-//
-//                                Log.d(TAG,ex);
-//                            }
-//
-//                            if(isMainForeground){
-//                                Log.d(TAG, "MainActivity is at foreground");
-//
-//                                //방목록 어댑터를 업데이트 하라고 메시지를 보낸다
-//                                sendMsgToMain("inserted/");
-//                            }
-//
-//                            //채팅 화면이 foreground에 있다면, 다른 방을 보고 있는 것이다
-//
-//                            break;
-//                    }
+//                    Log.d("sdf","메세지 : " + line);
 //
 //
 //                }
 //            }catch(IOException e) {
 //                Log.d(TAG, "socket reader error: "+e);
 //            }
-        }
+//        }
+//
+//
+    //쓰레드 종료
 
 
-        //쓰레드 종료
-        public void quit(){
-            Log.d(TAG, "client thread, quit()");
-            isSocketAlive = false;
-        }
-
-
-    }
-
-
-
+//    }
 
 
 }

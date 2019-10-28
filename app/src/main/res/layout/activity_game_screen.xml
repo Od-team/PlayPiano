@@ -6,101 +6,68 @@
     android:layout_height="match_parent"
     tools:context=".GameScreenActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/bgm_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="left"
         android:layout_marginTop="16dp"
-        android:orientation="vertical"
-        android:padding="5dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:text="bgm : 상어가족"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/videoView" />
+
+
+    <com.marcinmoskala.arcseekbar.ArcSeekBar
+        android:id="@+id/play_time_seekBar"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="0.85"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:ellipsize="marquee"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:singleLine="true"
-                android:text="bgm : "
-                android:textColor="@color/black_color"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="180dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:ellipsize="marquee"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:paddingLeft="10dp"
-                android:singleLine="true"
-                android:text="애국가 "
-                android:textColor="@color/black_color"
-                android:textSize="16sp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bgm_text"
+        app:maxProgress="30"
+        app:progress="30"
+        app:progressBackgroundColor="@color/gray_color"
+        app:progressBackgroundWidth="20dp"
+        app:progressColor="@color/brown_color"
+        app:progressWidth="20dp"
+        app:roundEdges="true"
+        app:thumb="@drawable/clock_image" />
 
 
-        </LinearLayout>
-
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-
-            <com.marcinmoskala.arcseekbar.ArcSeekBar
-                android:id="@+id/play_time_seekBar"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="0.85"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:maxProgress="60"
-                app:progress="60"
-                app:progressBackgroundColor="@color/colorPrimary"
-                app:progressBackgroundWidth="20dp"
-                app:progressWidth="20dp"
-                app:roundEdges="true"
-                app:thumb="@drawable/clock_image" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="0.15"
-                android:gravity="center"
-                android:text="60초"
-                android:textColor="@color/black_color"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-
-        <VideoView
-            android:id="@+id/videoView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="100dp" />
-
-
-    </LinearLayout>
-
+    <TextView
+        android:id="@+id/time_text"
+        android:layout_width="395dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="30초"
+        android:fontFamily="@font/cookierun_bold"
+        android:textColor="#ffffff"
+        android:textSize="26sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/play_time_seekBar" />
 
     <ImageView
         android:id="@+id/counter_imageView"
@@ -110,58 +77,88 @@
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:src="@drawable/black_circle"
+        android:src="@drawable/white_circle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/ready_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="준비"
+        android:textColor="#ffffff"
+        android:textSize="48sp"
+        app:layout_constraintBottom_toTopOf="@+id/counter_imageView"
+        app:layout_constraintEnd_toEndOf="@+id/counter_imageView"
+        app:layout_constraintStart_toStartOf="@+id/counter_imageView" />
+
+    <TextView
         android:id="@+id/counter_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#ffffff"
+        android:text="5"
         android:textSize="64sp"
-        android:textColor="@color/black_color"
         app:layout_constraintBottom_toBottomOf="@+id/counter_imageView"
         app:layout_constraintEnd_toEndOf="@+id/counter_imageView"
         app:layout_constraintStart_toStartOf="@+id/counter_imageView"
         app:layout_constraintTop_toTopOf="@+id/counter_imageView" />
 
+    <TextView
+        android:id="@+id/result_alert_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:textColor="#ffffff"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="8dp"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        android:layout_marginRight="8dp"
+        android:text="잠시후 결과화면으로 이동합니다 ~~"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ready_text" />
+
     <!--<ImageView-->
-        <!--android:id="@+id/imageView4"-->
-        <!--android:layout_width="126dp"-->
-        <!--android:layout_height="103dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginLeft="16dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:src="@drawable/g"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/linearLayout" />-->
+    <!--android:id="@+id/imageView4"-->
+    <!--android:layout_width="126dp"-->
+    <!--android:layout_height="103dp"-->
+    <!--android:layout_marginStart="16dp"-->
+    <!--android:layout_marginLeft="16dp"-->
+    <!--android:layout_marginTop="32dp"-->
+    <!--android:src="@drawable/g"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/linearLayout" />-->
 
 
     <!--&lt;!&ndash; ↓↓↓ 지워야 하는 부분 ↓↓↓&ndash;&gt;-->
 
     <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:text="게임 시작전 카운트 다운"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/imageView3" />-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="8dp"-->
+    <!--android:text="게임 시작전 카운트 다운"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/imageView3" />-->
 
     <!--<TextView-->
-        <!--android:id="@+id/textView2"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:text="아두이노 신호 들어올떄마다 \n음표 하나씩 부술거임\nhttps://github.com/tyrantgit/ExplosionField"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/imageView4"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/imageView4"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/imageView4" />-->
-
-
+    <!--android:id="@+id/textView2"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginLeft="8dp"-->
+    <!--android:text="아두이노 신호 들어올떄마다 \n음표 하나씩 부술거임\nhttps://github.com/tyrantgit/ExplosionField"-->
+    <!--app:layout_constraintBottom_toBottomOf="@+id/imageView4"-->
+    <!--app:layout_constraintStart_toEndOf="@+id/imageView4"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/imageView4" />-->
 
 
 </android.support.constraint.ConstraintLayout>
