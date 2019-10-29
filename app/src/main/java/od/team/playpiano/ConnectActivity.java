@@ -91,7 +91,7 @@ public class ConnectActivity extends Activity {
     private String keyprefNegotiated;
     private String keyprefDataId;
 
-    String room_number = "124567";
+    String room_number = "12345";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,6 +104,9 @@ public class ConnectActivity extends Activity {
 
         connectButton = (ImageButton) findViewById(R.id.connect_button);
         connectButton.setOnClickListener(connectListener);
+
+        Log.d("sdfsdf","6666666666");
+
 
         // If an implicit VIEW intent is launching the app, go directly to that URL.
         final Intent intent = getIntent();

@@ -55,42 +55,42 @@ public class CallFragment extends Fragment {
     controlView = inflater.inflate(R.layout.fragment_call, container, false);
 
     // Create UI controls.
-    contactView = (TextView) controlView.findViewById(R.id.contact_name_call);
-    disconnectButton = (ImageButton) controlView.findViewById(R.id.button_call_disconnect);
-    cameraSwitchButton = (ImageButton) controlView.findViewById(R.id.button_call_switch_camera);
-    videoScalingButton = (ImageButton) controlView.findViewById(R.id.button_call_scaling_mode);
+//    contactView = (TextView) controlView.findViewById(R.id.contact_name_call);
+//    disconnectButton = (ImageButton) controlView.findViewById(R.id.button_call_disconnect);
+//    cameraSwitchButton = (ImageButton) controlView.findViewById(R.id.button_call_switch_camera);
+//    videoScalingButton = (ImageButton) controlView.findViewById(R.id.button_call_scaling_mode);
     toggleMuteButton = (ImageButton) controlView.findViewById(R.id.button_call_toggle_mic);
-    captureFormatText = (TextView) controlView.findViewById(R.id.capture_format_text_call);
-    captureFormatSlider = (SeekBar) controlView.findViewById(R.id.capture_format_slider_call);
+//    captureFormatText = (TextView) controlView.findViewById(R.id.capture_format_text_call);
+//    captureFormatSlider = (SeekBar) controlView.findViewById(R.id.capture_format_slider_call);
 
     // Add buttons click events.
-    disconnectButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        callEvents.onCallHangUp();
-      }
-    });
+//    disconnectButton.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View view) {
+//        callEvents.onCallHangUp();
+//      }
+//    });
 
-    cameraSwitchButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        callEvents.onCameraSwitch();
-      }
-    });
+//    cameraSwitchButton.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View view) {
+//        callEvents.onCameraSwitch();
+//      }
+//    });
 
-    videoScalingButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        if (scalingType == ScalingType.SCALE_ASPECT_FILL) {
-          videoScalingButton.setBackgroundResource(R.drawable.ic_action_full_screen);
-          scalingType = ScalingType.SCALE_ASPECT_FIT;
-        } else {
-          videoScalingButton.setBackgroundResource(R.drawable.ic_action_return_from_full_screen);
-          scalingType = ScalingType.SCALE_ASPECT_FILL;
-        }
-        callEvents.onVideoScalingSwitch(scalingType);
-      }
-    });
+//    videoScalingButton.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View view) {
+//        if (scalingType == ScalingType.SCALE_ASPECT_FILL) {
+//          videoScalingButton.setBackgroundResource(R.drawable.ic_action_full_screen);
+//          scalingType = ScalingType.SCALE_ASPECT_FIT;
+//        } else {
+//          videoScalingButton.setBackgroundResource(R.drawable.ic_action_return_from_full_screen);
+//          scalingType = ScalingType.SCALE_ASPECT_FILL;
+//        }
+//        callEvents.onVideoScalingSwitch(scalingType);
+//      }
+//    });
     scalingType = ScalingType.SCALE_ASPECT_FILL;
 
     toggleMuteButton.setOnClickListener(new View.OnClickListener() {
@@ -108,25 +108,25 @@ public class CallFragment extends Fragment {
   public void onStart() {
     super.onStart();
 
-    boolean captureSliderEnabled = false;
+//    boolean captureSliderEnabled = false;
     Bundle args = getArguments();
     if (args != null) {
-      String contactName = args.getString(CallActivity.EXTRA_ROOMID);
-      contactView.setText(contactName);
+//      String contactName = args.getString(CallActivity.EXTRA_ROOMID);
+//      contactView.setText(contactName);
       videoCallEnabled = args.getBoolean(CallActivity.EXTRA_VIDEO_CALL, true);
-      captureSliderEnabled = videoCallEnabled
-          && args.getBoolean(CallActivity.EXTRA_VIDEO_CAPTUREQUALITYSLIDER_ENABLED, false);
+//      captureSliderEnabled = videoCallEnabled
+//              && args.getBoolean(CallActivity.EXTRA_VIDEO_CAPTUREQUALITYSLIDER_ENABLED, false);
     }
-    if (!videoCallEnabled) {
-      cameraSwitchButton.setVisibility(View.INVISIBLE);
-    }
-    if (captureSliderEnabled) {
-      captureFormatSlider.setOnSeekBarChangeListener(
-          new CaptureQualityController(captureFormatText, callEvents));
-    } else {
-      captureFormatText.setVisibility(View.GONE);
-      captureFormatSlider.setVisibility(View.GONE);
-    }
+//    if (!videoCallEnabled) {
+//      cameraSwitchButton.setVisibility(View.INVISIBLE);
+//    }
+//    if (captureSliderEnabled) {
+//      captureFormatSlider.setOnSeekBarChangeListener(
+//              new CaptureQualityController(captureFormatText, callEvents));
+//    } else {
+//      captureFormatText.setVisibility(View.GONE);
+//      captureFormatSlider.setVisibility(View.GONE);
+//    }
   }
 
   // TODO(sakal): Replace with onAttach(Context) once we only support API level 23+.
