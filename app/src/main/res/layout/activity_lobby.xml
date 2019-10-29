@@ -42,12 +42,12 @@
         android:layout_width="117dp"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="15dp"
         android:background="@drawable/button_click_effect"
         android:fontFamily="@font/cookierun_bold"
         android:text="피드백"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/room_list_recyclerView"
+        app:layout_constraintBottom_toBottomOf="@+id/filter_text"
         app:layout_constraintStart_toStartOf="@+id/room_create_btn"
         app:layout_constraintTop_toBottomOf="@+id/room_create_btn" />
 

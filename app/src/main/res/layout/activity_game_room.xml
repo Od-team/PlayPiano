@@ -16,12 +16,14 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_margin="10dp"
+        android:layout_marginTop="64dp"
         android:background="@drawable/button_click_effect"
         android:fontFamily="@font/cookierun_bold"
         android:gravity="center"
         android:text="방이름 : 어서오세요"
         android:textColor="@color/black_color"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.526"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,26 +36,11 @@
         android:background="@drawable/button_click_effect"
         android:fontFamily="@font/cookierun_bold"
         android:gravity="center"
-        android:text="테마 : 동요"
+        android:text="테마 : 베이직"
         android:textColor="@color/black_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/room_name_t" />
-
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/button_click_effect"
-        android:fontFamily="@font/cookierun_bold"
-        android:gravity="center"
-        android:text="연주시간 : 30초"
-        android:textColor="@color/black_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
 
     <ImageView
@@ -63,12 +50,12 @@
         android:layout_gravity="center"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="76dp"
+        android:layout_marginTop="84dp"
         android:background="@drawable/image1"
         app:layout_constraintEnd_toStartOf="@+id/textView5"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <TextView
         android:id="@+id/textView5"
