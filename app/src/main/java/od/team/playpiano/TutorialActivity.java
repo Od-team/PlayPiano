@@ -133,6 +133,7 @@ public class TutorialActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         LoginActivity.soundOn = 0;
+        isRaspOn = false;
     }
 
     public void soundPoolInit() {
@@ -175,6 +176,8 @@ public class TutorialActivity extends Activity {
                                 Log.d("sdffsd", "sfdfsd");
                             }
                             v=String.valueOf(LobbyActivity.in.readByte());
+                            Log.d("핸들러", "튜토리얼 로그 readByte");
+
                             if(LoginActivity.soundOn == 1){
 
                                 char a = (char) Integer.parseInt(v);
@@ -264,7 +267,10 @@ public class TutorialActivity extends Activity {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Log.d("핸들러", "튜토리얼 while 쪽에 에러");
                     }
+
+                    Log.d("핸들러", "튜토리얼 while 문 종료");
 
 
                 }

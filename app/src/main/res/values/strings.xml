@@ -3,6 +3,10 @@
     <string name="action_reset">Reset</string>
     <string name="settings_name" translatable="false">AppRTC Settings</string>
     <string name="disconnect_call">Disconnect Call</string>
+    <string name="feedback1">동휘야 다음 시간까지 오늘 연주 연습한 곡 20번 연주해오렴. 오늘 연주하는 거 보니깐 굉장히 재밌어 하던데. 어때? 연주해보는거 재밌지?</string>
+    <string name="reaction1">네!! 선생님. 처음 악기해보는 건데 이렇게 음악이 재밌는 건줄 처음 알았어요! 다음 주까지 연습 다해갈게요~</string>
+    <string name="feedback2">그래 동휘야~ 다음주에 보자</string>
+    <string name="feedback3">동휘야 오늘도 잘했어~</string>
     <string name="room_description">
         Please enter a room name. Room names are shared with everyone, so think
         of something unique and send it to a friend.

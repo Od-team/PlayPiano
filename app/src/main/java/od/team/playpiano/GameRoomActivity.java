@@ -105,7 +105,7 @@ public class GameRoomActivity extends AppCompatActivity {
     private String keyprefNegotiated;
     private String keyprefDataId;
 
-    String room_number = "31516";
+    String room_number = "386780";
     /**
      * AppRTC 추가 끝
      **/

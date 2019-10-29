@@ -70,6 +70,7 @@ public class LobbyActivity extends AppCompatActivity {
     String TAG = "tag "+this.getClass().getSimpleName();
 
     Button dialog_room_create_btn;
+    Button feedback_box_btn;
 
     Intent getIntent;
     public static String user_id;
@@ -96,6 +97,8 @@ public class LobbyActivity extends AppCompatActivity {
         context = getApplicationContext();
         service = new MainService(getApplicationContext());
         serviceIntent = new Intent(getApplicationContext(), MainService.class);
+
+
 
         getIntent = getIntent();
         user_id = getIntent.getStringExtra("user_id");
@@ -170,6 +173,7 @@ public class LobbyActivity extends AppCompatActivity {
         filter_people_spinner = findViewById(R.id.filter_people_spinner);
         filter_play_time_spinner = findViewById(R.id.filter_play_time_spinner);
         room_list_recyclerView = findViewById(R.id.room_list_recyclerView);
+        feedback_box_btn = findViewById(R.id.feedback_box_btn);
 
         linearLayoutManager = new LinearLayoutManager(LobbyActivity.this, LinearLayoutManager.VERTICAL,true);
         roomListAdapter = new RoomListAdapter(LobbyActivity.this, roomListData);
@@ -204,6 +208,14 @@ public class LobbyActivity extends AppCompatActivity {
                     filterTextChange("필터 ▲");
                     filterSpinnerAdapter();
                 }
+            }
+        });
+
+        feedback_box_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LobbyActivity.this,FeedbackBoxActivity.class);
+                startActivity(intent);
             }
         });
     }

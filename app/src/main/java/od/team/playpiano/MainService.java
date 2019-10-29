@@ -263,6 +263,18 @@ public class MainService extends Service {
                     if (str[0].equals("start")) {
                         sendMsgToGameRoom(str[1]);
                     }
+                    if(str[0].equals("play")){
+                        sendMsgToCallActivity("play");
+                    }
+                    if(str[0].equals("stop")){
+                        sendMsgToCallActivity("stop");
+                    }
+                    if(str[0].equals("Umm")){
+                        sendMsgToCallActivity(""+str[1]);
+                    }
+                    if(str[0].equals("close")){
+                        sendMsgToCallActivity("close");
+                    }
 
                 } catch (IOException e) {
                     Log.d("ㄴㄴㄴㄴ", "수신 연결 끊김");
@@ -286,6 +298,18 @@ public class MainService extends Service {
             intent.putExtra("message", message);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         }
+
+        /*액티비티에 메시지를 보낸다. 액티비티마다 브로드캐스트 달아줘야함*/
+        private void sendMsgToCallActivity(String message) {
+            Log.d(TAG, "Broadcasting message to call activity");
+            Intent intent = new Intent("call_event");
+            intent.putExtra("message", message);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        }
+
+
+
+
     }
 
 //    class ClientSocket extends Thread{

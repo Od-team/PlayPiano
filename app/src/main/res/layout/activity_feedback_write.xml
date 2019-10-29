@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_blue_white_gradient"
+    tools:context=".FeedbackWriteActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="피드백"
+        android:textColor="@color/black_color"
+        android:textSize="30dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/cookierun_bold"/>
+
+    <TextView
+        android:id="@+id/student_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="학생이름"
+        android:textSize="20dp"
+        android:textColor="@color/black_color"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:gravity="center"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="12dp"
+
+
+        android:background="@drawable/button_click_blue"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:background="@color/black_color">
+
+    </View>
+
+    <EditText
+        android:id="@+id/feedback_content_editTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="#FFFFFF"/>
+
+    <Button
+        android:id="@+id/feedback_complete_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="16dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:background="@drawable/button_click_effect"
+        android:text="작성 완료"/>
+</LinearLayout>

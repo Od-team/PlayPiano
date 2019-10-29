@@ -14,10 +14,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -28,6 +31,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -61,6 +65,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import od.team.playpiano.RecyclerItemData.RecyclerRoomListData;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -219,6 +225,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     // 수업종료
     Button button7;
+
     /**
      * 내가 추가 끝
      **/
@@ -228,383 +235,378 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         super.onCreate(savedInstanceState);
         Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
 
-        try{
-            // Set window styles for fullscreen-window size. Needs to be done before
-            // adding content.
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN | LayoutParams.FLAG_KEEP_SCREEN_ON
-                    | LayoutParams.FLAG_DISMISS_KEYGUARD | LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                    | LayoutParams.FLAG_TURN_SCREEN_ON);
-            getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility());
-            setContentView(R.layout.activity_call);
+
+        // Set window styles for fullscreen-window size. Needs to be done before
+        // adding content.
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN | LayoutParams.FLAG_KEEP_SCREEN_ON
+                | LayoutParams.FLAG_DISMISS_KEYGUARD | LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | LayoutParams.FLAG_TURN_SCREEN_ON);
+        getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility());
+        setContentView(R.layout.activity_call);
 
 
-            /** 내가 추가 시작**/
-            LoginActivity.soundOn = 1;
-            soundPoolInit();
-            raspSignalON();
+        /** 내가 추가 시작**/
+        LoginActivity.soundOn = 1;
+        soundPoolInit();
+        raspSignalON();
 
-            mediaPlayer= MediaPlayer.create(CallActivity.this, R.raw.bgm);
+        mediaPlayer = MediaPlayer.create(CallActivity.this, R.raw.bgm);
 
+        hand_image = findViewById(R.id.hand_imageView);
+        hand1_image = findViewById(R.id.hand1_imageView);
+        hand2_image = findViewById(R.id.hand2_imageView);
+        hand3_image = findViewById(R.id.hand3_imageView);
+        hand4_image = findViewById(R.id.hand4_imageView);
+        hand5_image = findViewById(R.id.hand5_imageView);
 
-            opponent_imageView = findViewById(R.id.opponent_imageView);
-            opponent_imageView1 = findViewById(R.id.opponent_imageView1);
+        opponent_imageView = findViewById(R.id.opponent_imageView);
+        opponent_imageView1 = findViewById(R.id.opponent_imageView1);
 
-            opponent_imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (LobbyActivity.user_id.equals("teacher")) {
-                                        if (isOpoonentClicked == false) {
-                                            opponent_imageView.setImageResource(R.drawable.green_border);
-                                            isOpoonentClicked = true;
-                                        } else {
-                                            opponent_imageView.setImageResource(R.drawable.black_border);
-                                            isOpoonentClicked = false;
-                                        }
+        opponent_imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (LobbyActivity.user_id.equals("teacher")) {
+                                    if (isOpoonentClicked == false) {
+                                        opponent_imageView.setImageResource(R.drawable.green_border);
+                                        isOpoonentClicked = true;
+                                    } else {
+                                        opponent_imageView.setImageResource(R.drawable.black_border);
+                                        isOpoonentClicked = false;
                                     }
                                 }
-                            });
-                        }
-                    }).start();
-                }
-            });
-            opponent_imageView1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (LobbyActivity.user_id.equals("teacher")) {
-                                        if (isOpoonentClicked1 == false) {
-                                            opponent_imageView1.setImageResource(R.drawable.green_border);
-                                            isOpoonentClicked1 = true;
-                                        } else {
-                                            opponent_imageView1.setImageResource(R.drawable.black_border);
-                                            isOpoonentClicked1 = false;
-                                        }
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+        opponent_imageView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (LobbyActivity.user_id.equals("teacher")) {
+                                    if (isOpoonentClicked1 == false) {
+                                        opponent_imageView1.setImageResource(R.drawable.green_border);
+                                        isOpoonentClicked1 = true;
+                                    } else {
+                                        opponent_imageView1.setImageResource(R.drawable.black_border);
+                                        isOpoonentClicked1 = false;
                                     }
                                 }
-                            });
-                        }
-                    }).start();
-                }
-            });
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
 
 
-            play_pause_btn_imageView = findViewById(R.id.play_pause_btn_imageView);
-            stop_imageView = findViewById(R.id.stop_imageView);
+        play_pause_btn_imageView = findViewById(R.id.play_pause_btn_imageView);
+        stop_imageView = findViewById(R.id.stop_imageView);
 
+        if (!LobbyActivity.user_id.equals("teacher")) {
+            play_pause_btn_imageView.setVisibility(View.INVISIBLE);
+            stop_imageView.setVisibility(View.INVISIBLE);
+        }
+
+        if (play_pause_btn_imageView.getVisibility() == View.VISIBLE) {
             play_pause_btn_imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(isPlaying == false){
-                        play_pause_btn_imageView.setImageResource(R.drawable.pause_btn_image);
-                        if(mediaPlayer.getCurrentPosition() == 0){
-                            mediaPlayer.seekTo(0);
-                        }
-                        else{
-                            mediaPlayer.seekTo(seek_position);
-                        }
-                        mediaPlayer.start();
-                        isPlaying = true;
-                    }
-                    else{
-                        mediaPlayer.pause();
-                        play_pause_btn_imageView.setImageResource(R.drawable.play_btn_image);
-                        seek_position = mediaPlayer.getCurrentPosition();
-                        isPlaying = false;
-                    }
+                    sendMsg("play@@play");
                 }
             });
-
-
+        }
+        if (stop_imageView.getVisibility() == View.VISIBLE) {
             stop_imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    isPlaying = false;
-                    play_pause_btn_imageView.setImageResource(R.drawable.play_btn_image);
-                    mediaPlayer.seekTo(0);
-                    seek_position = 0;
-                    mediaPlayer.pause();
-                    Toast.makeText(CallActivity.this,"음악이 정지되었습니다.",Toast.LENGTH_SHORT).show();
+                    sendMsg("stop@@stop");
                 }
             });
-
-            Umm_text = findViewById(R.id.Umm_text);
-
-            handler = new Handler(){
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    switch (msg.what){
-                        case 1:
-                            Log.d("핸들러", String.valueOf(msg.what));
-                            Umm_text.setText("1번");
-                            Umm_text.setVisibility(View.VISIBLE);
-                            //Glide.with(TutorialActivity.this).load(R.drawable.hand_1).into(hand_image);
-                            changeHandImage(1);
-                            break;
-                        case 2:
-                            Log.d("핸들러", String.valueOf(msg.what));
-                            Umm_text.setText("2번");
-                            Umm_text.setVisibility(View.VISIBLE);
-                            //Glide.with(TutorialActivity.this).load(R.drawable.hand_2).into(hand_image);
-                            changeHandImage(2);
-                            break;
-                        case 3:
-                            Log.d("핸들러", String.valueOf(msg.what));
-                            Umm_text.setText("3번");
-                            Umm_text.setVisibility(View.VISIBLE);
-                            //Glide.with(TutorialActivity.this).load(R.drawable.hand_3).into(hand_image);
-                            changeHandImage(3);
-                            break;
-                        case 4:
-                            Log.d("핸들러", String.valueOf(msg.what));
-                            Umm_text.setText("4번");
-                            Umm_text.setVisibility(View.VISIBLE);
-                            //Glide.with(TutorialActivity.this).load(R.drawable.hand_4).into(hand_image);
-                            changeHandImage(4);
-                            break;
-                        case 5:
-                            Log.d("핸들러", String.valueOf(msg.what));
-                            Umm_text.setText("5번");
-                            Umm_text.setVisibility(View.VISIBLE);
-                            //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
-                            changeHandImage(5);
-                            break;
-                    }
-
-                }
-            };
-
-            button7.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    try{
-                        if(mediaPlayer != null){
-                            if(mediaPlayer.isPlaying()){
-                                mediaPlayer.pause();
-                                mediaPlayer.stop();
-                            }
-                        }
-                    }catch ( Exception e){
-
-                    }
-
-                    Intent intent =  new Intent(CallActivity.this, LobbyActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            });
-            /** 내가 추가 끝**/
-
-            iceConnected = false;
-            signalingParameters = null;
-
-            // Create UI controls.
-            pipRenderer = (SurfaceViewRenderer) findViewById(R.id.pip_video_view);
-            fullscreenRenderer = (SurfaceViewRenderer) findViewById(R.id.fullscreen_video_view);
-            callFragment = new CallFragment();
-            hudFragment = new HudFragment();
-
-
-            // Show/hide call control fragment on view click.
-            View.OnClickListener listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    toggleCallControlFragmentVisibility();
-                }
-            };
-
-            // Swap feeds on pip view click.
-            pipRenderer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    setSwappedFeeds(!isSwappedFeeds);
-                }
-            });
-
-            fullscreenRenderer.setOnClickListener(listener);
-            remoteRenderers.add(remoteProxyRenderer);
-
-            final Intent intent = getIntent();
-
-            // Create video renderers.
-            rootEglBase = EglBase.create();
-            pipRenderer.init(rootEglBase.getEglBaseContext(), null);
-            pipRenderer.setScalingType(ScalingType.SCALE_ASPECT_FIT);
-            String saveRemoteVideoToFile = intent.getStringExtra(EXTRA_SAVE_REMOTE_VIDEO_TO_FILE);
-
-            // When saveRemoteVideoToFile is set we save the video from the remote to a file.
-            if (saveRemoteVideoToFile != null) {
-                int videoOutWidth = intent.getIntExtra(EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_WIDTH, 0);
-                int videoOutHeight = intent.getIntExtra(EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT, 0);
-                try {
-                    videoFileRenderer = new VideoFileRenderer(
-                            saveRemoteVideoToFile, videoOutWidth, videoOutHeight, rootEglBase.getEglBaseContext());
-                    remoteRenderers.add(videoFileRenderer);
-                } catch (IOException e) {
-                    throw new RuntimeException(
-                            "Failed to open video file for output: " + saveRemoteVideoToFile, e);
-                }
-            }
-            fullscreenRenderer.init(rootEglBase.getEglBaseContext(), null);
-            fullscreenRenderer.setScalingType(ScalingType.SCALE_ASPECT_FILL);
-
-            pipRenderer.setZOrderMediaOverlay(true);
-            pipRenderer.setEnableHardwareScaler(true /* enabled */);
-            fullscreenRenderer.setEnableHardwareScaler(true /* enabled */);
-            // Start with local feed in fullscreen and swap it to the pip when the call is connected.
-            if (LobbyActivity.user_id.equals("teacher")) {
-                setSwappedFeeds(false /* isSwappedFeeds */);
-                Log.d("sdsdf", "선생님은 안바뀜");
-            }
-
-            // Check for mandatory permissions.
-            for (String permission : MANDATORY_PERMISSIONS) {
-                if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                    logAndToast("Permission " + permission + " is not granted");
-                    setResult(RESULT_CANCELED);
-                    finish();
-                    return;
-                }
-            }
-
-            Uri roomUri = intent.getData();
-            if (roomUri == null) {
-                logAndToast(getString(R.string.missing_url));
-                Log.e(TAG, "Didn't get any URL in intent!");
-                setResult(RESULT_CANCELED);
-                finish();
-                return;
-            }
-
-            // Get Intent parameters.
-            String roomId = intent.getStringExtra(EXTRA_ROOMID);
-            Log.d(TAG, "Room ID: " + roomId);
-            if (roomId == null || roomId.length() == 0) {
-                logAndToast(getString(R.string.missing_url));
-                Log.e(TAG, "Incorrect room ID in intent!");
-                setResult(RESULT_CANCELED);
-                finish();
-                return;
-            }
-
-            boolean loopback = intent.getBooleanExtra(EXTRA_LOOPBACK, false);
-            boolean tracing = intent.getBooleanExtra(EXTRA_TRACING, false);
-
-            int videoWidth = intent.getIntExtra(EXTRA_VIDEO_WIDTH, 0);
-            int videoHeight = intent.getIntExtra(EXTRA_VIDEO_HEIGHT, 0);
-
-            screencaptureEnabled = intent.getBooleanExtra(EXTRA_SCREENCAPTURE, false);
-            // If capturing format is not specified for screencapture, use screen resolution.
-            if (screencaptureEnabled && videoWidth == 0 && videoHeight == 0) {
-                DisplayMetrics displayMetrics = getDisplayMetrics();
-                videoWidth = displayMetrics.widthPixels;
-                videoHeight = displayMetrics.heightPixels;
-            }
-            PeerConnectionClient.DataChannelParameters dataChannelParameters = null;
-            if (intent.getBooleanExtra(EXTRA_DATA_CHANNEL_ENABLED, false)) {
-                dataChannelParameters = new PeerConnectionClient.DataChannelParameters(intent.getBooleanExtra(EXTRA_ORDERED, true),
-                        intent.getIntExtra(EXTRA_MAX_RETRANSMITS_MS, -1),
-                        intent.getIntExtra(EXTRA_MAX_RETRANSMITS, -1), intent.getStringExtra(EXTRA_PROTOCOL),
-                        intent.getBooleanExtra(EXTRA_NEGOTIATED, false), intent.getIntExtra(EXTRA_ID, -1));
-            }
-            peerConnectionParameters =
-                    new PeerConnectionClient.PeerConnectionParameters(intent.getBooleanExtra(EXTRA_VIDEO_CALL, true), loopback,
-                            tracing, videoWidth, videoHeight, intent.getIntExtra(EXTRA_VIDEO_FPS, 0),
-                            intent.getIntExtra(EXTRA_VIDEO_BITRATE, 0), intent.getStringExtra(EXTRA_VIDEOCODEC),
-                            intent.getBooleanExtra(EXTRA_HWCODEC_ENABLED, true),
-                            intent.getBooleanExtra(EXTRA_FLEXFEC_ENABLED, false),
-                            intent.getIntExtra(EXTRA_AUDIO_BITRATE, 0), intent.getStringExtra(EXTRA_AUDIOCODEC),
-                            intent.getBooleanExtra(EXTRA_NOAUDIOPROCESSING_ENABLED, false),
-                            intent.getBooleanExtra(EXTRA_AECDUMP_ENABLED, false),
-                            intent.getBooleanExtra(EXTRA_OPENSLES_ENABLED, false),
-                            intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_AEC, false),
-                            intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_AGC, false),
-                            intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_NS, false),
-                            intent.getBooleanExtra(EXTRA_ENABLE_LEVEL_CONTROL, false),
-                            intent.getBooleanExtra(EXTRA_DISABLE_WEBRTC_AGC_AND_HPF, false), dataChannelParameters);
-            commandLineRun = intent.getBooleanExtra(EXTRA_CMDLINE, false);
-            runTimeMs = intent.getIntExtra(EXTRA_RUNTIME, 0);
-
-            Log.d(TAG, "VIDEO_FILE: '" + intent.getStringExtra(EXTRA_VIDEO_FILE_AS_CAMERA) + "'");
-
-            // Create connection client. Use DirectRTCClient if room name is an IP otherwise use the
-            // standard WebSocketRTCClient.
-            if (loopback || !DirectRTCClient.IP_PATTERN.matcher(roomId).matches()) {
-                appRtcClient = new WebSocketRTCClient(this);
-            } else {
-                Log.i(TAG, "Using DirectRTCClient because room name looks like an IP.");
-                appRtcClient = new DirectRTCClient(this);
-            }
-            // Create connection parameters.
-            String urlParameters = intent.getStringExtra(EXTRA_URLPARAMETERS);
-            roomConnectionParameters =
-                    new AppRTCClient.RoomConnectionParameters(roomUri.toString(), roomId, loopback, urlParameters);
-
-            // Create CPU monitor
-            cpuMonitor = new CpuMonitor(this);
-            hudFragment.setCpuMonitor(cpuMonitor);
-
-            // Send intent arguments to fragments.
-            callFragment.setArguments(intent.getExtras());
-            hudFragment.setArguments(intent.getExtras());
-            // Activate call and HUD fragments and start the call.
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.add(R.id.call_fragment_container, callFragment);
-//    ft.add(R.id.hud_fragment_container, hudFragment);
-            ft.commit();
-
-            // For command line execution run connection for <runTimeMs> and exit.
-            if (commandLineRun && runTimeMs > 0) {
-                (new Handler()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        disconnect();
-                    }
-                }, runTimeMs);
-            }
-
-            peerConnectionClient = PeerConnectionClient.getInstance();
-            if (loopback) {
-                PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
-                options.networkIgnoreMask = 0;
-                peerConnectionClient.setPeerConnectionFactoryOptions(options);
-            }
-            peerConnectionClient.createPeerConnectionFactory(
-                    getApplicationContext(), peerConnectionParameters, CallActivity.this);
-
-            if (screencaptureEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                startScreenCapture();
-            } else {
-                startCall();
-            }
-        }catch (Exception e){
-
         }
 
+
+        Umm_text = findViewById(R.id.Umm_text);
+
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case 1:
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("1번");
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p1");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_1).into(hand_image);
+                        changeHandImage(1);
+                        break;
+                    case 2:
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("2번");
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p2");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_2).into(hand_image);
+                        changeHandImage(2);
+                        break;
+                    case 3:
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("3번");
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p3");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_3).into(hand_image);
+                        changeHandImage(3);
+                        break;
+                    case 4:
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("4번");
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p4");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_4).into(hand_image);
+                        changeHandImage(4);
+                        break;
+                    case 5:
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("5번");
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p5");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeHandImage(5);
+                        break;
+                }
+
+            }
+        };
+        button7 = findViewById(R.id.button7);
+
+        if(!LobbyActivity.user_id.equals("teacher")){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            button7.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
+            }).start();
+        }
+
+        button7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMsg("close@@close");
+            }
+        });
+        /** 내가 추가 끝**/
+
+        iceConnected = false;
+        signalingParameters = null;
+
+        // Create UI controls.
+        pipRenderer = (SurfaceViewRenderer) findViewById(R.id.pip_video_view);
+        fullscreenRenderer = (SurfaceViewRenderer) findViewById(R.id.fullscreen_video_view);
+        callFragment = new CallFragment();
+        hudFragment = new HudFragment();
+
+
+        // Show/hide call control fragment on view click.
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleCallControlFragmentVisibility();
+            }
+        };
+
+        // Swap feeds on pip view click.
+        pipRenderer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setSwappedFeeds(!isSwappedFeeds);
+            }
+        });
+
+        fullscreenRenderer.setOnClickListener(listener);
+        remoteRenderers.add(remoteProxyRenderer);
+
+        final Intent intent = getIntent();
+
+        // Create video renderers.
+        rootEglBase = EglBase.create();
+        pipRenderer.init(rootEglBase.getEglBaseContext(), null);
+        pipRenderer.setScalingType(ScalingType.SCALE_ASPECT_FIT);
+        String saveRemoteVideoToFile = intent.getStringExtra(EXTRA_SAVE_REMOTE_VIDEO_TO_FILE);
+
+        // When saveRemoteVideoToFile is set we save the video from the remote to a file.
+        if (saveRemoteVideoToFile != null) {
+            int videoOutWidth = intent.getIntExtra(EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_WIDTH, 0);
+            int videoOutHeight = intent.getIntExtra(EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT, 0);
+            try {
+                videoFileRenderer = new VideoFileRenderer(
+                        saveRemoteVideoToFile, videoOutWidth, videoOutHeight, rootEglBase.getEglBaseContext());
+                remoteRenderers.add(videoFileRenderer);
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Failed to open video file for output: " + saveRemoteVideoToFile, e);
+            }
+        }
+        fullscreenRenderer.init(rootEglBase.getEglBaseContext(), null);
+        fullscreenRenderer.setScalingType(ScalingType.SCALE_ASPECT_FILL);
+
+        pipRenderer.setZOrderMediaOverlay(true);
+        pipRenderer.setEnableHardwareScaler(true /* enabled */);
+        fullscreenRenderer.setEnableHardwareScaler(true /* enabled */);
+        // Start with local feed in fullscreen and swap it to the pip when the call is connected.
+        if (LobbyActivity.user_id.equals("teacher")) {
+            setSwappedFeeds(false /* isSwappedFeeds */);
+            Log.d("sdsdf", "선생님은 안바뀜");
+        }
+
+        // Check for mandatory permissions.
+        for (String permission : MANDATORY_PERMISSIONS) {
+            if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                logAndToast("Permission " + permission + " is not granted");
+                setResult(RESULT_CANCELED);
+                finish();
+                return;
+            }
+        }
+
+        Uri roomUri = intent.getData();
+        if (roomUri == null) {
+            logAndToast(getString(R.string.missing_url));
+            Log.e(TAG, "Didn't get any URL in intent!");
+            setResult(RESULT_CANCELED);
+            finish();
+            return;
+        }
+
+        // Get Intent parameters.
+        String roomId = intent.getStringExtra(EXTRA_ROOMID);
+        Log.d(TAG, "Room ID: " + roomId);
+        if (roomId == null || roomId.length() == 0) {
+            logAndToast(getString(R.string.missing_url));
+            Log.e(TAG, "Incorrect room ID in intent!");
+            setResult(RESULT_CANCELED);
+            finish();
+            return;
+        }
+
+        boolean loopback = intent.getBooleanExtra(EXTRA_LOOPBACK, false);
+        boolean tracing = intent.getBooleanExtra(EXTRA_TRACING, false);
+
+        int videoWidth = intent.getIntExtra(EXTRA_VIDEO_WIDTH, 0);
+        int videoHeight = intent.getIntExtra(EXTRA_VIDEO_HEIGHT, 0);
+
+        screencaptureEnabled = intent.getBooleanExtra(EXTRA_SCREENCAPTURE, false);
+        // If capturing format is not specified for screencapture, use screen resolution.
+        if (screencaptureEnabled && videoWidth == 0 && videoHeight == 0) {
+            DisplayMetrics displayMetrics = getDisplayMetrics();
+            videoWidth = displayMetrics.widthPixels;
+            videoHeight = displayMetrics.heightPixels;
+        }
+        PeerConnectionClient.DataChannelParameters dataChannelParameters = null;
+        if (intent.getBooleanExtra(EXTRA_DATA_CHANNEL_ENABLED, false)) {
+            dataChannelParameters = new PeerConnectionClient.DataChannelParameters(intent.getBooleanExtra(EXTRA_ORDERED, true),
+                    intent.getIntExtra(EXTRA_MAX_RETRANSMITS_MS, -1),
+                    intent.getIntExtra(EXTRA_MAX_RETRANSMITS, -1), intent.getStringExtra(EXTRA_PROTOCOL),
+                    intent.getBooleanExtra(EXTRA_NEGOTIATED, false), intent.getIntExtra(EXTRA_ID, -1));
+        }
+        peerConnectionParameters =
+                new PeerConnectionClient.PeerConnectionParameters(intent.getBooleanExtra(EXTRA_VIDEO_CALL, true), loopback,
+                        tracing, videoWidth, videoHeight, intent.getIntExtra(EXTRA_VIDEO_FPS, 0),
+                        intent.getIntExtra(EXTRA_VIDEO_BITRATE, 0), intent.getStringExtra(EXTRA_VIDEOCODEC),
+                        intent.getBooleanExtra(EXTRA_HWCODEC_ENABLED, true),
+                        intent.getBooleanExtra(EXTRA_FLEXFEC_ENABLED, false),
+                        intent.getIntExtra(EXTRA_AUDIO_BITRATE, 0), intent.getStringExtra(EXTRA_AUDIOCODEC),
+                        intent.getBooleanExtra(EXTRA_NOAUDIOPROCESSING_ENABLED, false),
+                        intent.getBooleanExtra(EXTRA_AECDUMP_ENABLED, false),
+                        intent.getBooleanExtra(EXTRA_OPENSLES_ENABLED, false),
+                        intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_AEC, false),
+                        intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_AGC, false),
+                        intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_NS, false),
+                        intent.getBooleanExtra(EXTRA_ENABLE_LEVEL_CONTROL, false),
+                        intent.getBooleanExtra(EXTRA_DISABLE_WEBRTC_AGC_AND_HPF, false), dataChannelParameters);
+        commandLineRun = intent.getBooleanExtra(EXTRA_CMDLINE, false);
+        runTimeMs = intent.getIntExtra(EXTRA_RUNTIME, 0);
+
+        Log.d(TAG, "VIDEO_FILE: '" + intent.getStringExtra(EXTRA_VIDEO_FILE_AS_CAMERA) + "'");
+
+        // Create connection client. Use DirectRTCClient if room name is an IP otherwise use the
+        // standard WebSocketRTCClient.
+        if (loopback || !DirectRTCClient.IP_PATTERN.matcher(roomId).matches()) {
+            appRtcClient = new WebSocketRTCClient(this);
+        } else {
+            Log.i(TAG, "Using DirectRTCClient because room name looks like an IP.");
+            appRtcClient = new DirectRTCClient(this);
+        }
+        // Create connection parameters.
+        String urlParameters = intent.getStringExtra(EXTRA_URLPARAMETERS);
+        roomConnectionParameters =
+                new AppRTCClient.RoomConnectionParameters(roomUri.toString(), roomId, loopback, urlParameters);
+
+        // Create CPU monitor
+        cpuMonitor = new CpuMonitor(this);
+        hudFragment.setCpuMonitor(cpuMonitor);
+
+        // Send intent arguments to fragments.
+        callFragment.setArguments(intent.getExtras());
+        hudFragment.setArguments(intent.getExtras());
+        // Activate call and HUD fragments and start the call.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.add(R.id.call_fragment_container, callFragment);
+//    ft.add(R.id.hud_fragment_container, hudFragment);
+        ft.commit();
+
+        // For command line execution run connection for <runTimeMs> and exit.
+        if (commandLineRun && runTimeMs > 0) {
+            (new Handler()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    disconnect();
+                }
+            }, runTimeMs);
+        }
+
+        peerConnectionClient = PeerConnectionClient.getInstance();
+        if (loopback) {
+            PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
+            options.networkIgnoreMask = 0;
+            peerConnectionClient.setPeerConnectionFactoryOptions(options);
+        }
+        peerConnectionClient.createPeerConnectionFactory(
+                getApplicationContext(), peerConnectionParameters, CallActivity.this);
+
+        if (screencaptureEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startScreenCapture();
+        } else {
+            startCall();
+        }
     }
 
     @TargetApi(17)
     private DisplayMetrics getDisplayMetrics() {
         DisplayMetrics displayMetrics = null;
-        try{
+        try {
             displayMetrics = new DisplayMetrics();
             WindowManager windowManager =
                     (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
             windowManager.getDefaultDisplay().getRealMetrics(displayMetrics);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -1169,7 +1171,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     }
 
 
-
     public void soundPoolInit() {
         sound1 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
         sound2 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
@@ -1209,8 +1210,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                             if (LobbyActivity.in == null) {
                                 Log.d("sdffsd", "sfdfsd");
                             }
-                            v=String.valueOf(LobbyActivity.in.readByte());
-                            if(LoginActivity.soundOn == 1){
+                            v = String.valueOf(LobbyActivity.in.readByte());
+                            if (LoginActivity.soundOn == 1) {
 
                                 char a = (char) Integer.parseInt(v);
                                 Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
@@ -1223,8 +1224,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                                         }
                                     }).start();
 
-                                    cutTime = (System.currentTimeMillis() - startTime)/1000.0;
-                                    raspDataToServer.add("p1_"+cutTime+"@@");
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p1_" + cutTime + "@@");
 
                                     Message messageId = handler.obtainMessage();
                                     messageId.what = 1;
@@ -1238,8 +1239,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
                                         }
                                     }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime)/1000.0;
-                                    raspDataToServer.add("p2_"+cutTime+"@@");
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p2_" + cutTime + "@@");
 
                                     Message messageId = handler.obtainMessage();
                                     messageId.what = 2;
@@ -1253,8 +1254,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
                                         }
                                     }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime)/1000.0;
-                                    raspDataToServer.add("p3_"+cutTime+"@@");
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p3_" + cutTime + "@@");
 
                                     Message messageId = handler.obtainMessage();
                                     messageId.what = 3;
@@ -1268,8 +1269,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
                                         }
                                     }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime)/1000.0;
-                                    raspDataToServer.add("p4_"+cutTime+"@@");
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p4_" + cutTime + "@@");
 
                                     Message messageId = handler.obtainMessage();
                                     messageId.what = 4;
@@ -1283,8 +1284,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
                                         }
                                     }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime)/1000.0;
-                                    raspDataToServer.add("p5_"+cutTime+"@@");
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p5_" + cutTime + "@@");
 
                                     Message messageId = handler.obtainMessage();
                                     messageId.what = 5;
@@ -1292,8 +1293,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
                                 }
                             }
-
-
 
 
                         }
@@ -1312,31 +1311,186 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         LoginActivity.soundOn = 0;
     }
 
-    private void changeHandImage(int index){
+    private void changeHandImage(int index) {
         hand_image.setVisibility(View.GONE);
         hand1_image.setVisibility(View.GONE);
         hand2_image.setVisibility(View.GONE);
         hand3_image.setVisibility(View.GONE);
         hand4_image.setVisibility(View.GONE);
         hand5_image.setVisibility(View.GONE);
-        switch (index){
-            case 1 :
+        switch (index) {
+            case 1:
                 hand1_image.setVisibility(View.VISIBLE);
                 break;
-            case 2 :
+            case 2:
                 hand2_image.setVisibility(View.VISIBLE);
                 break;
-            case 3 :
+            case 3:
                 hand3_image.setVisibility(View.VISIBLE);
                 break;
-            case 4 :
+            case 4:
                 hand4_image.setVisibility(View.VISIBLE);
                 break;
-            case 5 :
+            case 5:
                 hand5_image.setVisibility(View.VISIBLE);
                 break;
         }
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, new IntentFilter("call_event"));
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver);
+    }
+
+    //서비스에서 보낸 메시지를 받는 메소드
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String message = intent.getStringExtra("message");
+            Log.d("서비스", "11111111Receiver) message received: " + message);
+
+            if (message.equals("play")) {
+                if (isPlaying == false) {
+                    play_pause_btn_imageView.setImageResource(R.drawable.pause_btn_image);
+                    if (!LobbyActivity.user_id.equals("teacher")) {
+                        if (mediaPlayer.getCurrentPosition() == 0) {
+                            mediaPlayer.seekTo(0);
+                        } else {
+                            mediaPlayer.seekTo(seek_position);
+                        }
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 3; i > 0; i--) {
+                                    final int finalI = i;
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Umm_text.setText(finalI +"");
+                                        }
+                                    });
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Umm_text.setText("시작");
+                                    }
+                                });
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                mediaPlayer.start();
+                            }
+                        }).start();
+                    }
+                    isPlaying = true;
+                } else {
+                    play_pause_btn_imageView.setImageResource(R.drawable.play_btn_image);
+                    if (!LobbyActivity.user_id.equals("teacher")) {
+                        mediaPlayer.pause();
+                        seek_position = mediaPlayer.getCurrentPosition();
+                    }
+                    isPlaying = false;
+                }
+            }
+            if (message.equals("stop")) {
+                play_pause_btn_imageView.setImageResource(R.drawable.play_btn_image);
+                if (!LobbyActivity.user_id.equals("teacher")) {
+                    mediaPlayer.seekTo(0);
+                    seek_position = 0;
+                    mediaPlayer.pause();
+                }
+                isPlaying = false;
+                Toast.makeText(CallActivity.this, "음악이 정지되었습니다.", Toast.LENGTH_SHORT).show();
+            }
+
+            if (message.equals("close")) {
+                try {
+                    if (mediaPlayer != null) {
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.pause();
+                            mediaPlayer.stop();
+                        }
+                    }
+                } catch (Exception e) {
+
+                }
+
+                finish();
+            }
+
+            if (message.equals("p1")) {
+                updateUIThread("도");
+                updateColorThread(Color.parseColor("#CC13C0"));
+            }
+            if (message.equals("p2")) {
+                updateUIThread("레");
+                updateColorThread(Color.parseColor("#CC0801"));
+            }
+            if (message.equals("p3")) {
+                updateUIThread("미");
+                updateColorThread(Color.parseColor("#CC6B00"));
+            }
+            if (message.equals("p4")) {
+                updateUIThread("파");
+                updateColorThread(Color.parseColor("#CCAF00"));
+            }
+            if (message.equals("p5")) {
+                updateUIThread("솔");
+                updateColorThread(Color.parseColor("#76CC00"));
+            }
+
+        }
+    };
+
+    //서비스로 메시지를 보낸다
+    void sendMsg(String msg) {
+        Intent intent = new Intent(getApplicationContext(), MainService.class);
+        intent.putExtra("message", msg);
+        startService(intent);
+    }
+
+    public void updateUIThread(final String msg) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Umm_text.setText("" + msg);
+                    }
+                });
+            }
+        }).start();
+    }
+    public void updateColorThread(final int dd) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Umm_text.setTextColor(dd);
+                    }
+                });
+            }
+        }).start();
+    }
 }
