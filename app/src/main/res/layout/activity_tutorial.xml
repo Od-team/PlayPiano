@@ -103,6 +103,52 @@
         android:adjustViewBounds="true"
         android:visibility="gone"
         android:src="@drawable/hand_w5"/>
+    <ImageView
+        android:id="@+id/hand6_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_w6"/>
+    <ImageView
+        android:id="@+id/hand7_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_w7"/>
+
+    <ImageView
+        android:id="@+id/drum_default_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/drum_default"/>
+
+
+    <ImageView
+        android:id="@+id/drum_left_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/drum_left"/>
+
+
+    <ImageView
+        android:id="@+id/drum_right_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/drum_right"/>
+
 
 
     <!-- Notice -->
@@ -119,8 +165,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <Button
+            android:id="@+id/complete_tutorial_btn"
             android:onClick="completeTutorial"
-            android:text="확인"
+            android:text="다음"
             android:textSize="16dp"
             android:textColor="#00A2F6"
             android:fontFamily="@font/cookierun_bold"

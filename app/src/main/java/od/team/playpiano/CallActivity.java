@@ -207,16 +207,22 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     ImageView hand3_image;
     ImageView hand4_image;
     ImageView hand5_image;
+    ImageView hand6_image;
+    ImageView hand7_image;
+    ImageView drum_default_imageView;
+    ImageView drum_left_imageView;
+    ImageView drum_right_imageView;
 
-    SoundPool sound1, sound2, sound3, sound4, sound5;
-    int soundId1, soundId2, soundId3, soundId4, soundId5;
+    SoundPool sound1, sound2, sound3, sound4, sound5, sound6, sound7, sound8, sound9;
+    int soundId1, soundId2, soundId3, soundId4, soundId5, soundId6, soundId7, soundId8, soundId9;
 
     boolean isRaspOn = false;
     ArrayList<String> raspDataToServer = new ArrayList<>();
 
     long startTime;
     double cutTime;
-    String v;
+    String left;
+    String right;
 
     Handler handler;
 
@@ -259,6 +265,12 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         hand3_image = findViewById(R.id.hand3_imageView);
         hand4_image = findViewById(R.id.hand4_imageView);
         hand5_image = findViewById(R.id.hand5_imageView);
+        hand6_image = findViewById(R.id.hand6_imageView);
+        hand7_image = findViewById(R.id.hand7_imageView);
+
+        drum_default_imageView = findViewById(R.id.drum_default_imageView);
+        drum_left_imageView = findViewById(R.id.drum_left_imageView);
+        drum_right_imageView = findViewById(R.id.drum_right_imageView);
 
         opponent_imageView = findViewById(R.id.opponent_imageView);
         opponent_imageView1 = findViewById(R.id.opponent_imageView1);
@@ -386,13 +398,43 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
                         changeHandImage(5);
                         break;
+                    case 6:
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("5번");
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p6");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeHandImage(6);
+                        break;
+                    case 7:
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("5번");
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p7");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeHandImage(7);
+                        break;
+                    case 8:
+                        Log.d("핸들러", String.valueOf(msg.what));
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p8");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeDrumImage(8);
+                        break;
+                    case 9:
+                        Log.d("핸들러", String.valueOf(msg.what));
+                        Umm_text.setVisibility(View.VISIBLE);
+                        sendMsg("Umm@@p9");
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeDrumImage(9);
+                        break;
                 }
 
             }
         };
         button7 = findViewById(R.id.button7);
 
-        if(!LobbyActivity.user_id.equals("teacher")){
+        if (!LobbyActivity.user_id.equals("teacher")) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -1177,28 +1219,36 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         sound3 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
         sound4 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
         sound5 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        sound6 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        sound7 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        sound8 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        sound9 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
 
         soundId1 = sound1.load(CallActivity.this, R.raw.p1, 1);
         soundId2 = sound2.load(CallActivity.this, R.raw.p2, 1);
         soundId3 = sound3.load(CallActivity.this, R.raw.p3, 1);
         soundId4 = sound4.load(CallActivity.this, R.raw.p4, 1);
         soundId5 = sound5.load(CallActivity.this, R.raw.p5, 1);
+        soundId6 = sound6.load(CallActivity.this, R.raw.p6, 1);
+        soundId7 = sound7.load(CallActivity.this, R.raw.p7, 1);
+        soundId8 = sound8.load(CallActivity.this, R.raw.p8, 1);
+        soundId9 = sound9.load(CallActivity.this, R.raw.p9, 1);
     }
 
     public void raspSignalON() {
 
+        /** 여기 고쳐야함 / 연주화면에서 선생님 손 이미지가 안바뀜 1245번줄을 1268번줄 조건에 합쳐야함
+         *
+         *  if(a == '1' && !LobbyActivity.user_id.equals("teacher")) 이걸로 고치자
+         *
+         * **/
         if (!LobbyActivity.user_id.equals("teacher")) {
 
             isRaspOn = true;
 
             raspDataToServer.clear();
 
-            if (LobbyActivity.in == null) {
-                Log.d("sdffsd", "sfdfsd");
-            } else {
-                Log.d("sdffsd", "not null");
-            }
-
+            /** 왼손 **/
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -1207,13 +1257,13 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                         while (isRaspOn) {
 //                                Log.d("ㅇㅇㅇ","메세지 기다림");
 
-                            if (LobbyActivity.in == null) {
+                            if (LobbyActivity.left_in == null) {
                                 Log.d("sdffsd", "sfdfsd");
                             }
-                            v = String.valueOf(LobbyActivity.in.readByte());
+                            left = String.valueOf(LobbyActivity.left_in.readByte());
                             if (LoginActivity.soundOn == 1) {
 
-                                char a = (char) Integer.parseInt(v);
+                                char a = (char) Integer.parseInt(left);
                                 Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
                                 if (a == '1') {
 
@@ -1290,6 +1340,97 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                                     Message messageId = handler.obtainMessage();
                                     messageId.what = 5;
                                     handler.sendMessage(messageId);
+                                }
+                                else if (a == '8') {
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            sound5.play(soundId5, 1.0f, 1.0f, 1, 0, 1.0f);
+
+                                        }
+                                    }).start();
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p8_" + cutTime + "@@");
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 8;
+                                    handler.sendMessage(messageId);
+                                }
+                            }
+
+
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+            }).start();
+
+            /** 오른손 **/
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+
+                        while (isRaspOn) {
+//                                Log.d("ㅇㅇㅇ","메세지 기다림");
+
+                            if (LobbyActivity.right_in == null) {
+                                Log.d("sdffsd", "sfdfsd");
+                            }
+                            right = String.valueOf(LobbyActivity.right_in.readByte());
+                            if (LoginActivity.soundOn == 1) {
+
+                                char a = (char) Integer.parseInt(right);
+                                Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
+                                if (a == '6') {
+
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            sound6.play(soundId6, 1.0f, 1.0f, 1, 0, 1.0f);
+                                        }
+                                    }).start();
+
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p6_" + cutTime + "@@");
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 6;
+                                    handler.sendMessage(messageId);
+
+                                } else if (a == '7') {
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            sound7.play(soundId7, 1.0f, 1.0f, 1, 0, 1.0f);
+
+                                        }
+                                    }).start();
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p7_" + cutTime + "@@");
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 7;
+                                    handler.sendMessage(messageId);
+
+                                }
+                                else if (a == '9') {
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            sound9.play(soundId9, 1.0f, 1.0f, 1, 0, 1.0f);
+
+                                        }
+                                    }).start();
+                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                    raspDataToServer.add("p9_" + cutTime + "@@");
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 9;
+                                    handler.sendMessage(messageId);
 
                                 }
                             }
@@ -1318,6 +1459,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         hand3_image.setVisibility(View.GONE);
         hand4_image.setVisibility(View.GONE);
         hand5_image.setVisibility(View.GONE);
+        hand6_image.setVisibility(View.GONE);
+        hand7_image.setVisibility(View.GONE);
         switch (index) {
             case 1:
                 hand1_image.setVisibility(View.VISIBLE);
@@ -1333,6 +1476,12 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 break;
             case 5:
                 hand5_image.setVisibility(View.VISIBLE);
+                break;
+            case 6:
+                hand6_image.setVisibility(View.VISIBLE);
+                break;
+            case 7:
+                hand7_image.setVisibility(View.VISIBLE);
                 break;
         }
 
@@ -1376,7 +1525,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Umm_text.setText(finalI +"");
+                                            Umm_text.setText(finalI + "");
                                         }
                                     });
                                     try {
@@ -1456,6 +1605,22 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 updateUIThread("솔");
                 updateColorThread(Color.parseColor("#76CC00"));
             }
+            if (message.equals("p6")) {
+                updateUIThread("라");
+                updateColorThread(Color.parseColor("#FF1DEC"));
+            }
+            if (message.equals("p7")) {
+                updateUIThread("시");
+                updateColorThread(Color.parseColor("#FF0069"));
+            }
+            if (message.equals("p8")) {
+                updateUIThread("왼 쿵");
+                updateColorThread(Color.parseColor("#FF8D28"));
+            }
+            if (message.equals("p9")) {
+                updateUIThread("오 쿵");
+                updateColorThread(Color.parseColor("#F01700"));
+            }
 
         }
     };
@@ -1480,6 +1645,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             }
         }).start();
     }
+
     public void updateColorThread(final int dd) {
         new Thread(new Runnable() {
             @Override
@@ -1492,5 +1658,19 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 });
             }
         }).start();
+    }
+    private void changeDrumImage(int index) {
+        drum_default_imageView.setVisibility(View.GONE);
+        drum_left_imageView.setVisibility(View.GONE);
+        drum_right_imageView.setVisibility(View.GONE);
+        switch (index) {
+            case 8:
+                drum_left_imageView.setVisibility(View.VISIBLE);
+                break;
+            case 9:
+                drum_right_imageView.setVisibility(View.VISIBLE);
+                break;
+        }
+
     }
 }

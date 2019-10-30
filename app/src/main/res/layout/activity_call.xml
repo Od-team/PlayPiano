@@ -134,14 +134,14 @@
         app:layout_constraintRight_toRightOf="parent" />
 
 
-    <FrameLayout
-        android:id="@+id/hud_fragment_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp" />
+    <!--<FrameLayout-->
+        <!--android:id="@+id/hud_fragment_container"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintRight_toRightOf="parent"-->
+        <!--tools:layout_editor_absoluteX="8dp"-->
+        <!--tools:layout_editor_absoluteY="8dp" />-->
 
     <Button
         android:id="@+id/button7"
@@ -240,6 +240,78 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <ImageView
+        android:id="@+id/hand6_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:adjustViewBounds="true"
+        android:padding="20dp"
+        android:src="@drawable/hand_w6"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/button7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <ImageView
+        android:id="@+id/hand7_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:adjustViewBounds="true"
+        android:padding="20dp"
+        android:src="@drawable/hand_w7"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/button7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <ImageView
+        android:id="@+id/drum_default_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:adjustViewBounds="true"
+        android:padding="20dp"
+        android:src="@drawable/hand_w6"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/button7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+
+    <ImageView
+        android:id="@+id/drum_left_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:adjustViewBounds="true"
+        android:padding="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/button7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        android:src="@drawable/play_drum_left"/>
+
+
+    <ImageView
+        android:id="@+id/drum_right_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:adjustViewBounds="true"
+        android:padding="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/button7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        android:src="@drawable/play_drum_right"/>
 
     <TextView
         android:id="@+id/Umm_text"

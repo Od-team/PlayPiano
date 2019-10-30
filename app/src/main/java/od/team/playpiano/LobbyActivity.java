@@ -80,11 +80,16 @@ public class LobbyActivity extends AppCompatActivity {
     String room_name;
     AlertDialog alertDialog;
 
-    public static DataInputStream in = null;
-    public static DataOutputStream out = null;
-    public static Socket socket = null;
+    public static DataInputStream left_in = null;
+    public static DataOutputStream left_out = null;
+    public static Socket left_socket = null;
 
-    char ok;
+    public static DataInputStream right_in = null;
+    public static DataOutputStream right_out = null;
+    public static Socket right_socket = null;
+
+    char left_ok;
+    char right_ok;
 
 
     @Override
@@ -104,27 +109,47 @@ public class LobbyActivity extends AppCompatActivity {
 
         if (user_id != null && !user_id.equals("teacher")) {
 
-
+//            /** 왼손 **/
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        socket = new Socket("192.168.0.147", 10000);
-                        in = new DataInputStream(socket.getInputStream());
-                        out = new DataOutputStream(socket.getOutputStream());
+                        left_socket = new Socket("192.168.0.147", 10000);
+                        left_in = new DataInputStream(left_socket.getInputStream());
+                        left_out = new DataOutputStream(left_socket.getOutputStream());
 
-                        String s = String.valueOf(in.readByte());
-                        ok = (char) Integer.parseInt(s);
+                        String left = String.valueOf(left_in.readByte());
+                        left_ok = (char) Integer.parseInt(left);
 
-                        Log.d("dsfd", "받은 값" + ok);
+                        Log.d("핸들러", "왼손 받은 값" + left_ok);
 
                     } catch (Exception e) {
-                        Log.d("dsfd", "ㅇㅔ러" + e.getLocalizedMessage());
+                        Log.d("핸들러", "왼손 ㅇㅔ러" + e.getLocalizedMessage());
                         e.printStackTrace();
                     }
                 }
             }).start();
 
+            /** 오른손 **/
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        right_socket = new Socket("192.168.0.153", 10000);
+                        right_in = new DataInputStream(right_socket.getInputStream());
+                        right_out = new DataOutputStream(right_socket.getOutputStream());
+
+                        String right = String.valueOf(right_in.readByte());
+                        right_ok = (char) Integer.parseInt(right);
+
+                        Log.d("핸들러", "오른손 받은 값" + right_ok);
+
+                    } catch (Exception e) {
+                        Log.d("핸들러", "오른손 ㅇㅔ러" + e.getLocalizedMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
 
         //튜토리얼 액티비티 생성
@@ -335,6 +360,12 @@ public class LobbyActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (alertDialog != null && alertDialog.isShowing())
+            alertDialog.dismiss();
+    }
 
     //서비스에서 보낸 메시지를 받는 메소드
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
