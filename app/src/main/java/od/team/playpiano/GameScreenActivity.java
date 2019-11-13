@@ -5,38 +5,19 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AbsSeekBar;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.marcinmoskala.arcseekbar.ArcSeekBar;
 
-import org.w3c.dom.Text;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import od.team.playpiano.GameRoomActivity;
-import od.team.playpiano.LobbyActivity;
-import od.team.playpiano.NetWorkAsync;
-import od.team.playpiano.R;
-import od.team.playpiano.ResultScreenActivity;
 
 public class GameScreenActivity extends AppCompatActivity {
 
@@ -227,11 +208,11 @@ public class GameScreenActivity extends AppCompatActivity {
         sound4 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
         sound5 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
 
-        soundId1 = sound1.load(GameScreenActivity.this, R.raw.p1, 1);
-        soundId2 = sound2.load(GameScreenActivity.this, R.raw.p2, 1);
-        soundId3 = sound3.load(GameScreenActivity.this, R.raw.p3, 1);
-        soundId4 = sound4.load(GameScreenActivity.this, R.raw.p4, 1);
-        soundId5 = sound5.load(GameScreenActivity.this, R.raw.p5, 1);
+        soundId1 = sound1.load(GameScreenActivity.this, R.raw.p4, 1);
+        soundId2 = sound2.load(GameScreenActivity.this, R.raw.p5, 1);
+        soundId3 = sound3.load(GameScreenActivity.this, R.raw.p6, 1);
+        soundId4 = sound4.load(GameScreenActivity.this, R.raw.p7, 1);
+        soundId5 = sound5.load(GameScreenActivity.this, R.raw.p8, 1);
     }
 
     public void raspSignalON() {

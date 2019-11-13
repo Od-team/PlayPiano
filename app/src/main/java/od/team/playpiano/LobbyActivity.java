@@ -88,6 +88,10 @@ public class LobbyActivity extends AppCompatActivity {
     public static DataOutputStream right_out = null;
     public static Socket right_socket = null;
 
+    public static int CurrentInstrument = 1;
+    public static int PIANO_FLAG = 1;
+    public static int DRUM_FLAG = 2;
+
     char left_ok;
     char right_ok;
 
@@ -107,6 +111,8 @@ public class LobbyActivity extends AppCompatActivity {
         user_id = getIntent.getStringExtra("user_id");
         Log.d("서비스", "로비 onCreate");
 
+
+
         if (user_id != null && !user_id.equals("teacher")) {
 
 //            /** 왼손 **/
@@ -114,13 +120,13 @@ public class LobbyActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        left_socket = new Socket("192.168.0.147", 10000);
+                        left_socket = new Socket("220.119.10.159", 10000);
                         left_in = new DataInputStream(left_socket.getInputStream());
                         left_out = new DataOutputStream(left_socket.getOutputStream());
 
                         String left = String.valueOf(left_in.readByte());
                         left_ok = (char) Integer.parseInt(left);
-
+6
                         Log.d("핸들러", "왼손 받은 값" + left_ok);
 
                     } catch (Exception e) {
@@ -135,7 +141,7 @@ public class LobbyActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        right_socket = new Socket("192.168.0.153", 10000);
+                        //right_socket = new Socket("220.119.10.159", 10000);
                         right_in = new DataInputStream(right_socket.getInputStream());
                         right_out = new DataOutputStream(right_socket.getOutputStream());
 

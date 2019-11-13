@@ -60,7 +60,7 @@
         android:src="@drawable/hand_default"/>
 
     <ImageView
-        android:id="@+id/hand1_imageView"
+        android:id="@+id/hand_left1_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
@@ -69,7 +69,7 @@
         android:src="@drawable/hand_w"/>
 
     <ImageView
-        android:id="@+id/hand2_imageView"
+        android:id="@+id/hand_left2_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
@@ -78,7 +78,7 @@
         android:src="@drawable/hand_w2"/>
 
     <ImageView
-        android:id="@+id/hand3_imageView"
+        android:id="@+id/hand_left3_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
@@ -87,7 +87,7 @@
         android:src="@drawable/hand_w3"/>
 
     <ImageView
-        android:id="@+id/hand4_imageView"
+        android:id="@+id/hand_left4_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
@@ -96,7 +96,7 @@
         android:src="@drawable/hand_w4"/>
 
     <ImageView
-        android:id="@+id/hand5_imageView"
+        android:id="@+id/hand_left5_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
@@ -104,7 +104,7 @@
         android:visibility="gone"
         android:src="@drawable/hand_w5"/>
     <ImageView
-        android:id="@+id/hand6_imageView"
+        android:id="@+id/hand_right1_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
@@ -112,13 +112,40 @@
         android:visibility="gone"
         android:src="@drawable/hand_w6"/>
     <ImageView
-        android:id="@+id/hand7_imageView"
+    android:id="@+id/hand_right2_imageView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="18dp"
+    android:adjustViewBounds="true"
+    android:visibility="gone"
+    android:src="@drawable/hand_w7"/>
+
+    <ImageView
+        android:id="@+id/hand_right3_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
         android:adjustViewBounds="true"
         android:visibility="gone"
-        android:src="@drawable/hand_w7"/>
+        android:src="@drawable/hand_w8"/>
+
+    <ImageView
+        android:id="@+id/hand_right4_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_w9"/>
+
+    <ImageView
+        android:id="@+id/hand_right5_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/hand_w10"/>
 
     <ImageView
         android:id="@+id/drum_default_imageView"

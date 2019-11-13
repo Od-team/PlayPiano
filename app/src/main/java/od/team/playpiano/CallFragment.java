@@ -62,7 +62,8 @@ public class CallFragment extends Fragment {
     toggleMuteButton = (ImageButton) controlView.findViewById(R.id.button_call_toggle_mic);
 //    captureFormatText = (TextView) controlView.findViewById(R.id.capture_format_text_call);
 //    captureFormatSlider = (SeekBar) controlView.findViewById(R.id.capture_format_slider_call);
-
+    boolean enabled = callEvents.onToggleMic();
+    toggleMuteButton.setAlpha(enabled ? 1.0f : 0.3f);
     // Add buttons click events.
 //    disconnectButton.setOnClickListener(new View.OnClickListener() {
 //      @Override

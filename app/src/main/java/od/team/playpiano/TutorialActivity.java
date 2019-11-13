@@ -5,7 +5,6 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -15,28 +14,33 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 
 public class TutorialActivity extends Activity {
 
     TextView interval_text;   //계이름 표시해주는 텍스트. 손가락으로 버튼을 눌러 소리를 낼 때 마다 누른 손가락에 맞는 계이름 표시
     ImageView hand_image;     //손모양 이미지, 손가락으로 버튼을 눌러 소리를 낼 때 마다 누른 손가락에 맞는 위치에 파란색 표시된 이미지로 변경
-    ImageView hand1_image;
-    ImageView hand2_image;
-    ImageView hand3_image;
-    ImageView hand4_image;
-    ImageView hand5_image;
-    ImageView hand6_image;
-    ImageView hand7_image;
-    ImageView drum_default;
-    ImageView drum_left;
-    ImageView drum_right;
+    ImageView hand_left1_image;
+    ImageView hand_left2_image;
+    ImageView hand_left3_image;
+    ImageView hand_left4_image;
+    ImageView hand_left5_image;
+    ImageView hand_right1_image;
+    ImageView hand_right2_image;
+    ImageView hand_right3_image;
+    ImageView hand_right4_image;
+    ImageView hand_right5_image;
+    ImageView drum_default_image;
+    ImageView drum_left_image;
+    ImageView drum_right_image;
     Button complete_tutorial_btn;
 
-    SoundPool sound1, sound2, sound3, sound4, sound5, sound6, sound7, sound8, sound9;
-    int soundId1, soundId2, soundId3, soundId4, soundId5, soundId6, soundId7, soundId8, soundId9;
+    SoundPool piano_sound1, piano_sound2, piano_sound3, piano_sound4, piano_sound5,
+            piano_sound6, piano_sound7, piano_sound8, piano_sound9, piano_sound10,
+            drum_sound1, drum_sound2;
+    int piano_soundId1, piano_soundId2, piano_soundId3, piano_soundId4, piano_soundId5,
+            piano_soundId6, piano_soundId7, piano_soundId8, piano_soundId9, piano_soundId10,
+            drum_soundId1, drum_soundId2;
 
     boolean isRaspOn = false;
 
@@ -57,18 +61,21 @@ public class TutorialActivity extends Activity {
         setContentView(R.layout.activity_tutorial);
 
         hand_image = findViewById(R.id.hand_imageView);
-        hand1_image = findViewById(R.id.hand1_imageView);
-        hand2_image = findViewById(R.id.hand2_imageView);
-        hand3_image = findViewById(R.id.hand3_imageView);
-        hand4_image = findViewById(R.id.hand4_imageView);
-        hand5_image = findViewById(R.id.hand5_imageView);
-        hand6_image = findViewById(R.id.hand6_imageView);
-        hand7_image = findViewById(R.id.hand7_imageView);
+        hand_left1_image = findViewById(R.id.hand_left1_imageView);
+        hand_left2_image = findViewById(R.id.hand_left2_imageView);
+        hand_left3_image = findViewById(R.id.hand_left3_imageView);
+        hand_left4_image = findViewById(R.id.hand_left4_imageView);
+        hand_left5_image = findViewById(R.id.hand_left5_imageView);
+        hand_right1_image = findViewById(R.id.hand_right1_imageView);
+        hand_right2_image = findViewById(R.id.hand_right2_imageView);
+        hand_right3_image = findViewById(R.id.hand_right3_imageView);
+        hand_right4_image = findViewById(R.id.hand_right4_imageView);
+        hand_right5_image = findViewById(R.id.hand_right5_imageView);
         interval_text = findViewById(R.id.interval_textView);
 
-        drum_default = findViewById(R.id.drum_default_imageView);
-        drum_left = findViewById(R.id.drum_left_imageView);
-        drum_right = findViewById(R.id.drum_right_imageView);
+        drum_default_image = findViewById(R.id.drum_default_imageView);
+        drum_left_image = findViewById(R.id.drum_left_imageView);
+        drum_right_image = findViewById(R.id.drum_right_imageView);
         complete_tutorial_btn = findViewById(R.id.complete_tutorial_btn);
 
         LoginActivity.soundOn = 1;
@@ -86,66 +93,94 @@ public class TutorialActivity extends Activity {
                 switch (msg.what) {
                     case 1:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("1번");
+                        interval_text.setText("솔");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_1).into(hand_image);
                         changeHandImage(1);
                         break;
                     case 2:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("2번");
+                        interval_text.setText("라");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_2).into(hand_image);
                         changeHandImage(2);
                         break;
                     case 3:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("3번");
+                        interval_text.setText("시");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_3).into(hand_image);
                         changeHandImage(3);
                         break;
                     case 4:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("4번");
+                        interval_text.setText("도");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_4).into(hand_image);
                         changeHandImage(4);
                         break;
                     case 5:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("5번");
+                        interval_text.setText("레");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
                         changeHandImage(5);
                         break;
                     case 6:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("6번");
+                        interval_text.setText("쿵");
+                        interval_text.setVisibility(View.VISIBLE);
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeDrum("left");
+                        break;
+                    case 11:
+                        Log.d("핸들러", String.valueOf(msg.what));
+                        interval_text.setText("미");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
                         changeHandImage(6);
                         break;
-                    case 7:
+                    case 12:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("7번");
+                        interval_text.setText("파");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
                         changeHandImage(7);
                         break;
-                    case 8:
+                    case 13:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("8번");
+                        interval_text.setText("솔");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
-                        changeDrumImage(8);
+                        changeHandImage(8);
                         break;
-                    case 9:
+                    case 14:
                         Log.d("핸들러", String.valueOf(msg.what));
-                        interval_text.setText("9번");
+                        interval_text.setText("라");
                         interval_text.setVisibility(View.VISIBLE);
                         //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
-                        changeDrumImage(9);
+                        changeHandImage(9);
+                        break;
+                    case 15:
+                        Log.d("핸들러", String.valueOf(msg.what));
+                        interval_text.setText("시");
+                        interval_text.setVisibility(View.VISIBLE);
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeHandImage(10);
+                        break;
+                    case 16:
+                        Log.d("핸들러", String.valueOf(msg.what));
+                        interval_text.setText("쿵");
+                        interval_text.setVisibility(View.VISIBLE);
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeDrum("right");
+                        break;
+                    case 17:
+                        Log.d("핸들러", String.valueOf(msg.what));
+                        interval_text.setText("");
+                        interval_text.setVisibility(View.GONE);
+                        //Glide.with(TutorialActivity.this).load(R.drawable.hand_5).into(hand_image);
+                        changeInstrument();
                         break;
                 }
 
@@ -177,7 +212,7 @@ public class TutorialActivity extends Activity {
         } else {
             complete_tutorial_btn.setText("완료");
             complete_tutorial = true;
-            changeDrum();
+            changeInstrument();
         }
 
     }
@@ -189,25 +224,31 @@ public class TutorialActivity extends Activity {
     }
 
     public void soundPoolInit() {
-        sound1 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        sound2 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        sound3 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        sound4 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        sound5 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        sound6 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        sound7 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        sound8 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        sound9 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound1 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound2 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound3 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound4 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound5 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound6 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound7 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound8 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound9 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound10 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        drum_sound1 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        drum_sound2 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
 
-        soundId1 = sound1.load(TutorialActivity.this, R.raw.p1, 1);
-        soundId2 = sound2.load(TutorialActivity.this, R.raw.p2, 1);
-        soundId3 = sound3.load(TutorialActivity.this, R.raw.p3, 1);
-        soundId4 = sound4.load(TutorialActivity.this, R.raw.p4, 1);
-        soundId5 = sound5.load(TutorialActivity.this, R.raw.p5, 1);
-        soundId6 = sound6.load(TutorialActivity.this, R.raw.p6, 1);
-        soundId7 = sound7.load(TutorialActivity.this, R.raw.p7, 1);
-        soundId8 = sound8.load(TutorialActivity.this, R.raw.p8, 1);
-        soundId9 = sound9.load(TutorialActivity.this, R.raw.p9, 1);
+        piano_soundId1 = piano_sound1.load(TutorialActivity.this, R.raw.p1, 1);
+        piano_soundId2 = piano_sound2.load(TutorialActivity.this, R.raw.p2, 1);
+        piano_soundId3 = piano_sound3.load(TutorialActivity.this, R.raw.p3, 1);
+        piano_soundId4 = piano_sound4.load(TutorialActivity.this, R.raw.p4, 1);
+        piano_soundId5 = piano_sound5.load(TutorialActivity.this, R.raw.p5, 1);
+        piano_soundId6 = piano_sound6.load(TutorialActivity.this, R.raw.p6, 1);
+        piano_soundId7 = piano_sound7.load(TutorialActivity.this, R.raw.p7, 1);
+        piano_soundId8 = piano_sound8.load(TutorialActivity.this, R.raw.p8, 1);
+        piano_soundId9 = piano_sound9.load(TutorialActivity.this, R.raw.p9, 1);
+        piano_soundId10 = piano_sound10.load(TutorialActivity.this, R.raw.p10, 1);
+        drum_soundId1 = drum_sound1.load(TutorialActivity.this, R.raw.drum_left, 1);
+        drum_soundId2 = drum_sound2.load(TutorialActivity.this, R.raw.drum_right, 1);
     }
 
     public void raspSignalON() {
@@ -236,97 +277,104 @@ public class TutorialActivity extends Activity {
 
                                 char a = (char) Integer.parseInt(left);
                                 Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
-                                if (a == '1') {
 
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound1.play(soundId1, 1.0f, 1.0f, 1, 0, 1.0f);
-                                        }
-                                    }).start();
+                                if(LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG){
+                                    if (a == '1') {
 
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p1_" + cutTime + "@@");
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound1.play(piano_soundId1, 1.0f, 1.0f, 1, 0, 1.0f);
+                                            }
+                                        }).start();
 
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 1;
-                                    handler.sendMessage(messageId);
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p1_" + cutTime + "@@");
 
-                                } else if (a == '2') {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound2.play(soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 1;
+                                        handler.sendMessage(messageId);
 
-                                        }
-                                    }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p2_" + cutTime + "@@");
+                                    } else if (a == '2') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound2.play(piano_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
 
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 2;
-                                    handler.sendMessage(messageId);
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p2_" + cutTime + "@@");
 
-                                } else if (a == '3') {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound3.play(soundId3, 1.0f, 1.0f, 1, 0, 1.0f);
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 2;
+                                        handler.sendMessage(messageId);
 
-                                        }
-                                    }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p3_" + cutTime + "@@");
+                                    } else if (a == '3') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound3.play(piano_soundId3, 1.0f, 1.0f, 1, 0, 1.0f);
 
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 3;
-                                    handler.sendMessage(messageId);
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p3_" + cutTime + "@@");
 
-                                } else if (a == '4') {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound4.play(soundId4, 1.0f, 1.0f, 1, 0, 1.0f);
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 3;
+                                        handler.sendMessage(messageId);
 
-                                        }
-                                    }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p4_" + cutTime + "@@");
+                                    } else if (a == '4') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound4.play(piano_soundId4, 1.0f, 1.0f, 1, 0, 1.0f);
 
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 4;
-                                    handler.sendMessage(messageId);
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p4_" + cutTime + "@@");
 
-                                } else if (a == '5') {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound5.play(soundId5, 1.0f, 1.0f, 1, 0, 1.0f);
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 4;
+                                        handler.sendMessage(messageId);
 
-                                        }
-                                    }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p5_" + cutTime + "@@");
+                                    } else if (a == '5') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound5.play(piano_soundId5, 1.0f, 1.0f, 1, 0, 1.0f);
 
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 5;
-                                    handler.sendMessage(messageId);
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p5_" + cutTime + "@@");
 
-                                } else if (a == '8') {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound8.play(soundId8, 1.0f, 1.0f, 1, 0, 1.0f);
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 5;
+                                        handler.sendMessage(messageId);
 
-                                        }
-                                    }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p8_" + cutTime + "@@");
-
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 8;
-                                    handler.sendMessage(messageId);
+                                    }
                                 }
+                                else if(LobbyActivity.CurrentInstrument == LobbyActivity.DRUM_FLAG){
+                                    if (a == '6') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                drum_sound1.play(drum_soundId1, 1.0f, 1.0f, 1, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p8_" + cutTime + "@@");
+
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 6;
+                                        handler.sendMessage(messageId);
+                                    }
+                                }
+
                             }
                         }
                     } catch (Exception e) {
@@ -334,6 +382,9 @@ public class TutorialActivity extends Activity {
                     }
                 }
             }).start();
+
+
+            /** 오른손 **/
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -348,54 +399,116 @@ public class TutorialActivity extends Activity {
                             right = String.valueOf(LobbyActivity.right_in.readByte());
                             if (LoginActivity.soundOn == 1) {
 
+
                                 char a = (char) Integer.parseInt(right);
                                 Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
 
-                                if (a == '6') {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound6.play(soundId6, 1.0f, 1.0f, 1, 0, 1.0f);
+                                if(LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG){
 
-                                        }
-                                    }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p6_" + cutTime + "@@");
+                                    if (a == '1') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound6.play(piano_soundId6, 1.0f, 1.0f, 1, 0, 1.0f);
 
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 6;
-                                    handler.sendMessage(messageId);
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p6_" + cutTime + "@@");
 
-                                } else if (a == '7') {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound7.play(soundId7, 1.0f, 1.0f, 1, 0, 1.0f);
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 11;
+                                        handler.sendMessage(messageId);
 
-                                        }
-                                    }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p7_" + cutTime + "@@");
+                                    } else if (a == '2') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound7.play(piano_soundId7, 1.0f, 1.0f, 1, 0, 1.0f);
 
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 7;
-                                    handler.sendMessage(messageId);
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p7_" + cutTime + "@@");
 
-                                } else if (a == '9') {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sound9.play(soundId9, 1.0f, 1.0f, 1, 0, 1.0f);
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 12;
+                                        handler.sendMessage(messageId);
 
-                                        }
-                                    }).start();
-                                    cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                    raspDataToServer.add("p9_" + cutTime + "@@");
+                                    } else if (a == '3') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound8.play(piano_soundId8, 1.0f, 1.0f, 1, 0, 1.0f);
 
-                                    Message messageId = handler.obtainMessage();
-                                    messageId.what = 9;
-                                    handler.sendMessage(messageId);
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p9_" + cutTime + "@@");
 
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 13;
+                                        handler.sendMessage(messageId);
+
+                                    } else if (a == '4') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound9.play(piano_soundId9, 1.0f, 1.0f, 1, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p9_" + cutTime + "@@");
+
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 14;
+                                        handler.sendMessage(messageId);
+
+                                    } else if (a == '5') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound10.play(piano_soundId10, 1.0f, 1.0f, 1, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p9_" + cutTime + "@@");
+
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 15;
+                                        handler.sendMessage(messageId);
+
+                                    } else if (a == '7') {
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 17;
+                                        handler.sendMessage(messageId);
+
+                                    }
+                                }
+                                else if(LobbyActivity.CurrentInstrument == LobbyActivity.DRUM_FLAG){
+                                    if (a == '6') {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                drum_sound2.play(drum_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                        cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                                        raspDataToServer.add("p9_" + cutTime + "@@");
+
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 16;
+                                        handler.sendMessage(messageId);
+
+                                    }else if (a == '7') {
+                                        Message messageId = handler.obtainMessage();
+                                        messageId.what = 17;
+                                        handler.sendMessage(messageId);
+
+                                    }
                                 }
 
 
@@ -416,61 +529,88 @@ public class TutorialActivity extends Activity {
 
     private void changeHandImage(int index) {
         hand_image.setVisibility(View.GONE);
-        hand1_image.setVisibility(View.GONE);
-        hand2_image.setVisibility(View.GONE);
-        hand3_image.setVisibility(View.GONE);
-        hand4_image.setVisibility(View.GONE);
-        hand5_image.setVisibility(View.GONE);
-        hand6_image.setVisibility(View.GONE);
-        hand7_image.setVisibility(View.GONE);
+        hand_left1_image.setVisibility(View.GONE);
+        hand_left2_image.setVisibility(View.GONE);
+        hand_left3_image.setVisibility(View.GONE);
+        hand_left4_image.setVisibility(View.GONE);
+        hand_left5_image.setVisibility(View.GONE);
+        hand_right1_image.setVisibility(View.GONE);
+        hand_right2_image.setVisibility(View.GONE);
+        hand_right3_image.setVisibility(View.GONE);
+        hand_right4_image.setVisibility(View.GONE);
+        hand_right5_image.setVisibility(View.GONE);
         switch (index) {
             case 1:
-                hand1_image.setVisibility(View.VISIBLE);
+                hand_left1_image.setVisibility(View.VISIBLE);
                 break;
             case 2:
-                hand2_image.setVisibility(View.VISIBLE);
+                hand_left2_image.setVisibility(View.VISIBLE);
                 break;
             case 3:
-                hand3_image.setVisibility(View.VISIBLE);
+                hand_left3_image.setVisibility(View.VISIBLE);
                 break;
             case 4:
-                hand4_image.setVisibility(View.VISIBLE);
+                hand_left4_image.setVisibility(View.VISIBLE);
                 break;
             case 5:
-                hand5_image.setVisibility(View.VISIBLE);
+                hand_left5_image.setVisibility(View.VISIBLE);
                 break;
             case 6:
-                hand6_image.setVisibility(View.VISIBLE);
+                hand_right1_image.setVisibility(View.VISIBLE);
                 break;
             case 7:
-                hand7_image.setVisibility(View.VISIBLE);
+                hand_right2_image.setVisibility(View.VISIBLE);
+                break;
+            case 8:
+                hand_right3_image.setVisibility(View.VISIBLE);
+                break;
+            case 9:
+                hand_right4_image.setVisibility(View.VISIBLE);
+                break;
+            case 10:
+                hand_right5_image.setVisibility(View.VISIBLE);
                 break;
         }
 
     }
 
-    private void changeDrum() {
-        hand_image.setVisibility(View.GONE);
-        hand1_image.setVisibility(View.GONE);
-        hand2_image.setVisibility(View.GONE);
-        hand3_image.setVisibility(View.GONE);
-        hand4_image.setVisibility(View.GONE);
-        hand5_image.setVisibility(View.GONE);
-        hand6_image.setVisibility(View.GONE);
-        hand7_image.setVisibility(View.GONE);
-        drum_default.setVisibility(View.VISIBLE);
+    private void changeInstrument() {
+        if(LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG){
+            LobbyActivity.CurrentInstrument = LobbyActivity.DRUM_FLAG;
+            hand_image.setVisibility(View.GONE);
+            hand_left1_image.setVisibility(View.GONE);
+            hand_left2_image.setVisibility(View.GONE);
+            hand_left3_image.setVisibility(View.GONE);
+            hand_left4_image.setVisibility(View.GONE);
+            hand_left5_image.setVisibility(View.GONE);
+            hand_right1_image.setVisibility(View.GONE);
+            hand_right2_image.setVisibility(View.GONE);
+            hand_right3_image.setVisibility(View.GONE);
+            hand_right4_image.setVisibility(View.GONE);
+            hand_right5_image.setVisibility(View.GONE);
+            drum_default_image.setVisibility(View.VISIBLE);
+
+            interval_text.setText("완료");
+
+        }else if(LobbyActivity.CurrentInstrument == LobbyActivity.DRUM_FLAG){
+            LobbyActivity.CurrentInstrument = LobbyActivity.PIANO_FLAG;
+            drum_default_image.setVisibility(View.GONE);
+            drum_left_image.setVisibility(View.GONE);
+            drum_right_image.setVisibility(View.GONE);
+            hand_image.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void changeDrumImage(int index) {
-        drum_default.setVisibility(View.GONE);
-        drum_left.setVisibility(View.GONE);
-        drum_right.setVisibility(View.GONE);
+    private void changeDrum(String index) {
+        drum_default_image.setVisibility(View.GONE);
+        drum_left_image.setVisibility(View.GONE);
+        drum_right_image.setVisibility(View.GONE);
         switch (index) {
-            case 8:
-                drum_left.setVisibility(View.VISIBLE);
+            case "left":
+                drum_left_image.setVisibility(View.VISIBLE);
                 break;
-            case 9:
-                drum_right.setVisibility(View.VISIBLE);
+            case "right":
+                drum_right_image.setVisibility(View.VISIBLE);
                 break;
         }
 
