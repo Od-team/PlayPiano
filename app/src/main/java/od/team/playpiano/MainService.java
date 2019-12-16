@@ -28,7 +28,7 @@ public class MainService extends Service {
     ConnectThread clientSocket;
     Socket socket;
 
-    String TAG = "tag :";
+    String TAG = "서비스";
 
     Context context;
     String get_message;
@@ -136,18 +136,20 @@ public class MainService extends Service {
 
         public void sendServer(String msg) {
             this.str = msg;
+            // 제일 처음엔 사용자의 아이디가 들어온다.
+            Log.d("서비스","메세지 : " + this.str);
         }
 
         @Override
         public void run() {
 
             try {
-                Log.d("ㄴㄴㄴㄴ", "소켓 연결 요청 전");
+                Log.d("서비스", "소켓 연결 요청 전");
                 // 1. 소켓 생성 후 서버 IP에 연결을 요청
-                socket = new Socket("13.209.4.168", 8888);
+                socket = new Socket("54.180.26.72", 10000);
 //                socket = new Socket("192.168.0.2", 10000);
 
-                Log.d("ㄴㄴㄴㄴ", "소켓 연결 요청 후");
+                Log.d("서비스", "소켓 연결 요청 후");
 
                 // 2. inout / output에 해당하는 thread를 각각 만들고 start()합니다
                 sender = new Thread(new ClientSender(socket));
@@ -156,7 +158,7 @@ public class MainService extends Service {
                 sender.start();
                 receiver.start();
 
-                Log.d("ㄴㄴㄴㄴ", "'스레드 스타트'");
+                Log.d("서비스", "'스레드 스타트'");
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -251,11 +253,12 @@ public class MainService extends Service {
                     Log.d("ㄴㄴㄴㄴ", "3 : " + receive_message.toString());
 
                     if (str[0].equals("room_create")) {
-                        sendMsgToLobby(str[1]+"@@"+str[2]);
+                        sendMsgToLobby("room_create@@"+str[1]+"@@"+str[2]);
                     }
 
                     if (str[0].equals("gameRoom")) {
-                        sendMsgToGameRoom(str[1]);
+                        Log.d("ㄴㄴㄴㄴ", "이거받음 : " + str[1]);
+                        sendMsgToGameRoom("user@@"+str[1]);
                     }
                     if (str[0].equals("ready")) {
                         sendMsgToGameRoom(str[1]);
@@ -269,11 +272,20 @@ public class MainService extends Service {
                     if(str[0].equals("stop")){
                         sendMsgToCallActivity("stop");
                     }
+                    if(str[0].equals("pause")){
+                        sendMsgToCallActivity("pause");
+                    }
                     if(str[0].equals("Umm")){
                         sendMsgToCallActivity(""+str[1]);
                     }
                     if(str[0].equals("close")){
                         sendMsgToCallActivity("close");
+                    }
+                    if(str[0].equals("master_exit")){
+                        sendMsgToGameRoom("master_exit");
+                    }
+                    if (str[0].equals("student_out")) {
+                        sendMsgToGameRoom("student_out");
                     }
 
                 } catch (IOException e) {
@@ -306,106 +318,8 @@ public class MainService extends Service {
             intent.putExtra("message", message);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         }
-
-
-
-
     }
 
-//    class ClientSocket extends Thread{
-//
-//
-//
-//        // 서버에 메시지 보내기
-//        // 네트워크에 연결할 때는 서브 쓰레드를 이용해야 한다
-//        public void sendMsgToServer(final String msg){
-//
-//            /** 가장먼저 사용자의 아이디가 들어온다.**/
-//
-//            Log.d(TAG, "sendMsg() to server. message:"+msg);
-//
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Log.d(TAG, "sendMsg()");
-//
-//                    try{
-//                        bufferedWriter.write(msg + "\n");
-//                        bufferedWriter.flush();
-//                    }catch (Exception e){
-//                        Log.d(TAG, "sendMsg() error");
-//                        StringWriter sw = new StringWriter();
-//                        e.printStackTrace(new PrintWriter(sw));
-//                        String ex = sw.toString();
-//
-//                        Log.d(TAG,ex);
-//                    }
-//
-//                }
-//            }).start();
-//
-//        }
-//
-//
-//        /*액티비티에 메시지를 보낸다. 액티비티마다 브로드캐스트 달아줘야함*/
-//        private void sendMsgToLobby(String message){
-//            Log.d(TAG, "Broadcasting message to lobby activity");
-//            Intent intent = new Intent("lobby_event");
-//            intent.putExtra("message", message);
-//            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-//        }
-//
-//        @Override
-//        public void run() {
-//
-//            try {
-//                //포트 고쳐야함
-//                socket = new Socket("13.209.4.168", 8888);
-//                Log.d(TAG, "connected to server");
-//
-//                InputStream is = socket.getInputStream();
-//                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-//                InputStreamReader isr = new InputStreamReader(is);
-//                bufferedReader = new BufferedReader(isr); //서버로부터 메시지를 읽어들이는 객체
-//
-//                OutputStreamWriter osw = new OutputStreamWriter(os);
-//                bufferedWriter = new BufferedWriter(osw); //서버에 메시지를 쓰는 객체
-//
-//                //서버에 연결 메시지 전송
-//                sendMsgToServer("user_id@@"+LobbyActivity.user_id);
-//
-//            } catch (Exception e) {
-//                Log.d(TAG, "socket connection error");
-//                StringWriter sw = new StringWriter();
-//                e.printStackTrace(new PrintWriter(sw));
-//                String ex = sw.toString();
-//
-//                Log.d(TAG,ex);
-//
-//            }
-//
-//            try {
-//
-//                //클라이언트의 메인 쓰레드는 서버로부터 데이터 읽어들이는 것만 반복
-//                while((line = (bufferedReader.readLine()) )!= null) {
-//
-//                    //서버에서 데이터를 보낼 때, 데이터를 '/'을 기준으로 한 문장으로 구성해서 보냄
-//                    //맨 앞 문자열: 클라이언트에게 보내는 신호(어떤 행동을 해라)
-//                    //그다음부터는 화면에 띄워줄 데이터
-//                    Log.d("sdf","메세지 : " + line);
-//
-//
-//                }
-//            }catch(IOException e) {
-//                Log.d(TAG, "socket reader error: "+e);
-//            }
-//        }
-//
-//
-    //쓰레드 종료
-
-
-//    }
 
 
 }

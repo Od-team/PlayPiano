@@ -57,4 +57,7 @@ dependencies {
     implementation files('libs/autobanh.jar')
     implementation files('libs/base_java.jar')
     implementation files('libs/libjingle_peerconnection.jar')
+
+    implementation 'gun0912.ted:tedpermission:2.0.0'
+
 }

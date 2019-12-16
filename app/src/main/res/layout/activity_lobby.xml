@@ -9,6 +9,7 @@
     tools:context=".LobbyActivity">
 
     <ImageView
+        android:id="@+id/imageView3"
         android:layout_width="206dp"
         android:layout_height="122dp"
         android:layout_marginStart="8dp"
@@ -18,18 +19,19 @@
         android:src="@drawable/busan_logo_image"
         app:layout_constraintBottom_toBottomOf="@+id/room_create_btn"
         app:layout_constraintEnd_toStartOf="@+id/room_create_btn"
-        app:layout_constraintHorizontal_bias="0.258"
+        app:layout_constraintHorizontal_bias="0.19"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/room_create_btn"
-        app:layout_constraintVertical_bias="0.542" />
+        app:layout_constraintVertical_bias="0.196" />
 
     <Button
         android:id="@+id/room_create_btn"
-        android:layout_width="117dp"
-        android:layout_height="84dp"
+        android:layout_width="99dp"
+        android:layout_height="61dp"
         android:layout_gravity="right"
-        android:layout_marginTop="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginRight="48dp"
         android:background="@drawable/button_click_effect"
         android:fontFamily="@font/cookierun_bold"
         android:text="방 만들기"
@@ -39,16 +41,37 @@
 
     <Button
         android:id="@+id/feedback_box_btn"
-        android:layout_width="117dp"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
         android:layout_gravity="right"
-        android:layout_marginTop="15dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/button_click_effect"
         android:fontFamily="@font/cookierun_bold"
         android:text="피드백"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/filter_text"
-        app:layout_constraintStart_toStartOf="@+id/room_create_btn"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/loop_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/room_create_btn" />
+
+    <Button
+        android:id="@+id/loop_btn"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/button_click_effect"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="bgm\n만들기"
+        android:textColor="#aaff0000"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/feedback_box_btn"
         app:layout_constraintTop_toBottomOf="@+id/room_create_btn" />
 
     <TextView
@@ -63,6 +86,7 @@
         android:text="필터 ▼"
         android:textColor="#000000"
         android:textSize="16sp"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/room_create_btn" />
 
@@ -80,16 +104,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="@font/cookierun_bold"
         android:text="방 목록"
         android:textColor="#000000"
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filter_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/job_text" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/room_list_recyclerView"
@@ -97,14 +119,118 @@
         android:layout_height="0dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:padding="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/ip_e_text"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/room_list_text">
 
     </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/job_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="선생님"
+        android:textColor="#aaff0000"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/filter_text"
+        app:layout_constraintTop_toBottomOf="@+id/feedback_box_btn" />
+
+    <TextView
+        android:id="@+id/j2_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="환영합니다"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/job_text"
+        app:layout_constraintStart_toEndOf="@+id/job_text" />
+
+    <ImageButton
+        android:id="@+id/reroll_image_btn"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/reroll"
+        app:layout_constraintBottom_toBottomOf="@+id/room_list_text"
+        app:layout_constraintStart_toEndOf="@+id/room_list_text"
+        app:layout_constraintTop_toTopOf="@+id/room_list_text" />
+
+    <EditText
+        android:id="@+id/ip_e_text"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:fontFamily="@font/cookierun_bold"
+        android:hint="ip를 입력하세요"
+        android:inputType="textPersonName"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toTopOf="@+id/ip_e_text2"
+        app:layout_constraintEnd_toStartOf="@+id/ip_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/ip_e_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:fontFamily="@font/cookierun_bold"
+        android:hint="ip를 입력하세요"
+        android:inputType="textPersonName"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ip_btn2"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/ip_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/button_click_effect"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="왼손"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@+id/ip_e_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ip_e_text"
+        app:layout_constraintTop_toTopOf="@+id/ip_e_text" />
+
+    <Button
+        android:id="@+id/ip_btn2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/button_click_effect"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="오른손"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@+id/ip_e_text2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ip_e_text2"
+        app:layout_constraintTop_toTopOf="@+id/ip_e_text2" />
 
 </android.support.constraint.ConstraintLayout>

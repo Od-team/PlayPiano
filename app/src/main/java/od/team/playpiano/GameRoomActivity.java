@@ -1,7 +1,9 @@
 package od.team.playpiano;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.content.SharedPreferences;
 import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -31,7 +34,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 import od.team.playpiano.RecyclerItemData.RecyclerRoomListData;
 
@@ -105,11 +110,14 @@ public class GameRoomActivity extends AppCompatActivity {
     private String keyprefNegotiated;
     private String keyprefDataId;
 
-    String room_number = "67321";
+    String room_number = "";
     /**
      * AppRTC 추가 끝
      **/
 
+    TextView master_name_text;
+    String user_job;
+    String master_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,12 +132,16 @@ public class GameRoomActivity extends AppCompatActivity {
         ready_btn = findViewById(R.id.ready_btn);
         ready_imageView = findViewById(R.id.ready_imageView);
         room_name_t = findViewById(R.id.room_name_t);
-
+        master_name_text = findViewById(R.id.master_name_text);
         textView6 = findViewById(R.id.textView6);
 
         getIntent = getIntent();
 
         user_id = LobbyActivity.user_id;
+        user_job = getIntent.getStringExtra("user_job");
+        room_number = getIntent.getStringExtra("room_number");
+
+        Log.d("sdfsdf", room_number + "pp");
 
         new Thread(new Runnable() {
             @Override
@@ -137,13 +149,21 @@ public class GameRoomActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        room_name_t.setText("방 제목 : "+getIntent.getStringExtra("room_name"));
+
+                        if (user_job.equals("student")) {
+                            master_id = getIntent.getStringExtra("master_id");
+                            master_name_text.setText(master_id + " 선생님");
+                            room_name_t.setText("방 제목 : " + getIntent.getStringExtra("room_name"));
+                        } else {
+                            master_name_text.setText(getIntent.getStringExtra("id") + " 선생님");
+                            room_name_t.setText("방 제목 : " + getIntent.getStringExtra("room_name"));
+                        }
                     }
                 });
             }
         }).start();
 
-        if (user_id != null && !user_id.equals("teacher")) {
+        if (user_job != null && !user_job.equals("teacher")) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -160,7 +180,7 @@ public class GameRoomActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        socket = new Socket("192.168.0.8", 10000);
+                        socket = new Socket("라즈베리파이 아이피 등록해야함", 10000);
                         in = new DataInputStream(socket.getInputStream());
                         out = new DataOutputStream(socket.getOutputStream());
 
@@ -178,7 +198,8 @@ public class GameRoomActivity extends AppCompatActivity {
 
         }
 
-        sendMsg("gameRoom@@" + user_id);
+        if (user_job.equals("student"))
+            sendMsg("gameRoom@@" + user_id);
 
 
         ready_btn.setOnClickListener(new View.OnClickListener() {
@@ -231,7 +252,7 @@ public class GameRoomActivity extends AppCompatActivity {
             final String message = intent.getStringExtra("message");
             Log.d("서비스", "GameRoomActivity message received: " + message);
 
-            if (message.equals("user")) {
+            if (message.contains("user")) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -242,19 +263,8 @@ public class GameRoomActivity extends AppCompatActivity {
                                 if (ok == 'o') {
                                     Toast.makeText(GameRoomActivity.this, "소켓연결됨", Toast.LENGTH_SHORT).show();
                                 }
-                                if (!textView6.getText().toString().equals("teacher")) {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    textView6.setText("student");
-                                                }
-                                            });
-                                        }
-                                    }).start();
-                                }
+                                Log.d("Sdfsfd", message);
+                                textView6.setText(message.replaceFirst("user@@", "") + " 학생");
                             }
                         });
                     }
@@ -274,27 +284,57 @@ public class GameRoomActivity extends AppCompatActivity {
                 }).start();
             }
             if (message.equals("start")) {
-//                Intent intent1 = new Intent(GameRoomActivity.this, GameScreenActivity.class);
-//                startActivity(intent1);
-                if(LobbyActivity.user_id.equals("teacher")){
-                    Log.d("11111", "111111111111");
-                    connectToRoom(room_number, false, false, false, 0);
+                if (ready_imageView.getVisibility() == View.VISIBLE) {
+
+                    Log.d("qqqq","번호 : "+room_number+"");
+
+                    if (user_job != null && user_job.equals("teacher")) {
+                        Log.d("11111", "111111111111");
+                        connectToRoom(room_number, false, false, false, 0);
+                    } else {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                Log.d("11111", "222222222");
+                                connectToRoom(room_number, false, false, false, 0);
+                            }
+                        }).start();
+                    }
+                } else {
+                    Toast.makeText(GameRoomActivity.this, "준비를 해주세요!!", Toast.LENGTH_LONG).show();
                 }
-                else{
+            }
+            if (message.equals("master_exit")) {
+                LobbyActivity.roomListData.clear();
+
+                Context context1 = GameRoomActivity.this;
+                if (user_job.equals("student") && getClassName(context1).equals("GameRoomActivity")) {
+                    Toast.makeText(GameRoomActivity.this, "선생님이 나가서 수업을 못해요!", Toast.LENGTH_SHORT).show();
+                }
+                finish();
+            }
+            if (message.equals("student_out")) {
+                if (user_job.equals("teacher")) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            Log.d("11111", "222222222");
-                            connectToRoom(room_number, false, false, false, 0);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    textView6.setText("waiting...");
+                                    student_imageView.setBackground(getResources().getDrawable(R.drawable.person));
+                                }
+                            });
                         }
                     }).start();
+                } else if (user_job.equals("student")) {
+                    finish();
                 }
-
             }
 
         }
@@ -574,6 +614,8 @@ public class GameRoomActivity extends AppCompatActivity {
             intent.putExtra(CallActivity.EXTRA_TRACING, tracing);
             intent.putExtra(CallActivity.EXTRA_CMDLINE, commandLineRun);
             intent.putExtra(CallActivity.EXTRA_RUNTIME, runTimeMs);
+            intent.putExtra("user_job", user_job);
+            Log.d("sdffds","Game3 "+user_job+"!!!");
 
             intent.putExtra(CallActivity.EXTRA_DATA_CHANNEL_ENABLED, dataChannelEnabled);
 
@@ -684,7 +726,35 @@ public class GameRoomActivity extends AppCompatActivity {
         keyprefNegotiated = getString(R.string.pref_negotiated_key);
         keyprefDataId = getString(R.string.pref_data_id_key);
     }
-    /** AppRTC 추가 끝**/
 
+    /**
+     * AppRTC 추가 끝
+     **/
+    @Override
+    public void onBackPressed() {
+        if (user_job.equals("student")) {
+            sendMsg("student_out@@student_out");
+        } else {
 
+            // db값 apprtc 지우는거 해야함
+
+            String urlr = "http://54.180.26.72/room_number_delete.php";
+            ContentValues value1 = new ContentValues();
+            value1.put("master_id", user_id);
+
+            NetWorkAsync netWorkAsync = new NetWorkAsync(urlr, value1);
+            netWorkAsync.execute();
+
+            Log.d("sdfsfd","삭제 ㅋㅋ"+ user_id);
+
+            sendMsg("master_exit@@master_exit");
+        }
+    }
+
+    public String getClassName(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> runningTaskInfos = activityManager.getRunningTasks(1);
+        Log.d("ㄴㄴㄴㄴ", "" + runningTaskInfos.get(0).topActivity.getClassName());
+        return runningTaskInfos.get(0).topActivity.getClassName();
+    }
 }

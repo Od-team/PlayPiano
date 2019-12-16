@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telecom.Call;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -64,6 +66,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -209,18 +212,13 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     ImageView hand_right3_image;
     ImageView hand_right4_image;
     ImageView hand_right5_image;
-    ImageView drum_default_imageView;
-    ImageView drum_left_imageView;
-    ImageView drum_right_imageView;
 
     TextView code_text;
 
     SoundPool piano_sound1, piano_sound2, piano_sound3, piano_sound4, piano_sound5,
-            piano_sound6, piano_sound7, piano_sound8, piano_sound9, piano_sound10,
-            drum_sound1, drum_sound2;
+            piano_sound6, piano_sound7, piano_sound8, piano_sound9, piano_sound10;
     int piano_soundId1, piano_soundId2, piano_soundId3, piano_soundId4, piano_soundId5,
-            piano_soundId6, piano_soundId7, piano_soundId8, piano_soundId9,piano_soundId10,
-            drum_soundId1, drum_soundId2;
+            piano_soundId6, piano_soundId7, piano_soundId8, piano_soundId9, piano_soundId10;
 
     boolean isRaspOn = false;
     ArrayList<String> raspDataToServer = new ArrayList<>();
@@ -242,11 +240,17 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
      * 내가 추가 끝
      **/
 
+    String user_job;
+
+    boolean isShownPlay = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
 
+        user_job = getIntent().getStringExtra("user_job");
+        Log.d("sdffds", "Call " + user_job + "!!!");
 
         // Set window styles for fullscreen-window size. Needs to be done before
         // adding content.
@@ -278,68 +282,11 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         hand_right3_image = findViewById(R.id.hand_right3_imageView);
         hand_right4_image = findViewById(R.id.hand_right4_imageView);
         hand_right5_image = findViewById(R.id.hand_right5_imageView);
-        //드럼용 이미지
-        drum_default_imageView = findViewById(R.id.drum_default_imageView);
-        drum_left_imageView = findViewById(R.id.drum_left_imageView);
-        drum_right_imageView = findViewById(R.id.drum_right_imageView);
-
-        opponent_imageView = findViewById(R.id.opponent_imageView);
-        opponent_imageView1 = findViewById(R.id.opponent_imageView1);
-
-        opponent_imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (LobbyActivity.user_id.equals("teacher")) {
-                                    if (isOpoonentClicked == false) {
-                                        opponent_imageView.setImageResource(R.drawable.green_border);
-                                        isOpoonentClicked = true;
-                                    } else {
-                                        opponent_imageView.setImageResource(R.drawable.black_border);
-                                        isOpoonentClicked = false;
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }).start();
-            }
-        });
-        opponent_imageView1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (LobbyActivity.user_id.equals("teacher")) {
-                                    if (isOpoonentClicked1 == false) {
-                                        opponent_imageView1.setImageResource(R.drawable.green_border);
-                                        isOpoonentClicked1 = true;
-                                    } else {
-                                        opponent_imageView1.setImageResource(R.drawable.black_border);
-                                        isOpoonentClicked1 = false;
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }).start();
-            }
-        });
-
 
         play_pause_btn_imageView = findViewById(R.id.play_pause_btn_imageView);
         stop_imageView = findViewById(R.id.stop_imageView);
 
-        if (!LobbyActivity.user_id.equals("teacher")) {
+        if (user_job.equals("student")) {
             play_pause_btn_imageView.setVisibility(View.INVISIBLE);
             stop_imageView.setVisibility(View.INVISIBLE);
         }
@@ -348,7 +295,11 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             play_pause_btn_imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sendMsg("play@@play");
+                    if (isPlaying == false) {
+                        sendMsg("play@@play");
+                    } else {
+                        sendMsg("pause@@pause");
+                    }
                 }
             });
         }
@@ -375,94 +326,80 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                         Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
 //                        Umm_text.setText("1번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@p4");
+                        sendMsg("Umm@@p1");
                         changeHandImage(1);
                         break;
                     case 2:
                         Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
 //                        Umm_text.setText("2번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@p5");
+                        sendMsg("Umm@@p2");
                         changeHandImage(2);
                         break;
                     case 3:
                         Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
 //                        Umm_text.setText("3번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@p6");
+                        sendMsg("Umm@@p3");
                         changeHandImage(3);
                         break;
                     case 4:
                         Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
 //                        Umm_text.setText("4번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@p7");
+                        sendMsg("Umm@@p4");
                         changeHandImage(4);
                         break;
                     case 5:
                         Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
 //                        Umm_text.setText("5번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@p8");
+                        sendMsg("Umm@@p5");
                         changeHandImage(5);
-                        break;
-                    case 6:
-                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
-//                        Umm_text.setText("5번");
-                        Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@p9");
-                        changeDrumImage("left");
                         break;
                     case 11:
                         Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
 //                        Umm_text.setText("5번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@p10");
+                        sendMsg("Umm@@p6");
                         changeHandImage(6);
                         break;
                     case 12:
-                        Log.d("핸들러", String.valueOf(msg.what));
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("5번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@drum_left");
+                        sendMsg("Umm@@p7");
                         changeHandImage(7);
                         break;
                     case 13:
-                        Log.d("핸들러", String.valueOf(msg.what));
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("5번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@drum_right");
+                        sendMsg("Umm@@p8");
                         changeHandImage(8);
                         break;
                     case 14:
-                        Log.d("핸들러", String.valueOf(msg.what));
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("5번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@drum_right");
+                        sendMsg("Umm@@p9");
                         changeHandImage(9);
                         break;
                     case 15:
-                        Log.d("핸들러", String.valueOf(msg.what));
+                        Log.d("핸들러", String.valueOf(msg.what) + "   ppppppppppppp");
+//                        Umm_text.setText("5번");
                         Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@drum_right");
+                        sendMsg("Umm@@p10");
                         changeHandImage(10);
                         break;
-                    case 16:
-                        Log.d("핸들러", String.valueOf(msg.what));
-                        Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@drum_right");
-                        changeDrumImage("right");
-                        break;
-                    case 17:
-                        Log.d("핸들러", String.valueOf(msg.what));
-                        Umm_text.setVisibility(View.VISIBLE);
-                        sendMsg("Umm@@drum_right");
-                        changeInstrument();
-                        break;
+
                 }
 
             }
         };
         button7 = findViewById(R.id.button7);
 
-        if (!LobbyActivity.user_id.equals("teacher")) {
+        if (user_job.equals("student")) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -515,6 +452,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
         final Intent intent = getIntent();
 
+
         // Create video renderers.
         rootEglBase = EglBase.create();
         pipRenderer.init(rootEglBase.getEglBaseContext(), null);
@@ -541,7 +479,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         pipRenderer.setEnableHardwareScaler(true /* enabled */);
         fullscreenRenderer.setEnableHardwareScaler(true /* enabled */);
         // Start with local feed in fullscreen and swap it to the pip when the call is connected.
-        if (LobbyActivity.user_id.equals("teacher")) {
+        if (user_job.equals("teacher")) {
             setSwappedFeeds(false /* isSwappedFeeds */);
             Log.d("sdsdf", "선생님은 안바뀜");
         }
@@ -776,6 +714,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             peerConnectionClient.stopVideoSource();
         }
         cpuMonitor.pause();
+        Log.d("신동휘", "씨발");
     }
 
     @Override
@@ -894,7 +833,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         }
         // Enable statistics callback.
         peerConnectionClient.enableStatsEvents(true, STAT_CALLBACK_PERIOD);
-        if (LobbyActivity.user_id.equals("teacher"))
+        if (user_job.equals("teacher"))
             setSwappedFeeds(true/* isSwappedFeeds */);
         else
             setSwappedFeeds(false/* isSwappedFeeds */);
@@ -1242,18 +1181,16 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
 
     public void soundPoolInit() {
-        piano_sound1 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound2 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound3 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound4 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound5 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound6 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound7 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound8 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound9 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        piano_sound10 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        drum_sound1 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
-        drum_sound2 = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+        piano_sound1 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound2 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound3 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound4 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound5 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound6 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound7 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound8 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound9 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
+        piano_sound10 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);// maxStreams, streamType, srcQuality
 
         piano_soundId1 = piano_sound1.load(CallActivity.this, R.raw.p1, 1);
         piano_soundId2 = piano_sound2.load(CallActivity.this, R.raw.p2, 1);
@@ -1265,8 +1202,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         piano_soundId8 = piano_sound8.load(CallActivity.this, R.raw.p8, 1);
         piano_soundId9 = piano_sound9.load(CallActivity.this, R.raw.p9, 1);
         piano_soundId10 = piano_sound10.load(CallActivity.this, R.raw.p10, 1);
-        drum_soundId1 = drum_sound1.load(CallActivity.this, R.raw.drum_left, 1);
-        drum_soundId2 = drum_sound2.load(CallActivity.this, R.raw.drum_right, 1);
     }
 
     public void raspSignalON() {
@@ -1278,337 +1213,236 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
          * **/
 
 
-            isRaspOn = true;
+        isRaspOn = true;
 
-            raspDataToServer.clear();
+        raspDataToServer.clear();
 
-            /** 왼손 **/
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
+        /** 왼손 **/
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-                        while (isRaspOn) {
+                    while (isRaspOn) {
 //                                Log.d("ㅇㅇㅇ","메세지 기다림");
 
-                            if (LobbyActivity.left_in == null) {
-                                Log.d("sdffsd", "sfdfsd");
-                            }
-                            left = String.valueOf(LobbyActivity.left_in.readByte());
-                            if (LoginActivity.soundOn == 1) {
+                        if (LobbyActivity.left_in == null) {
+                            Log.d("sdffsd", "sfdfsd");
+                        }
+                        left = String.valueOf(LobbyActivity.left_in.readByte());
+                        if (LoginActivity.soundOn == 1) {
 
-                                char a = (char) Integer.parseInt(left);
-                                Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
+                            char a = (char) Integer.parseInt(left);
+                            Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
 
-                                if(LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG){
-                                    if (a == '1') {
+                            if (LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG) {
+                                if (a == '1') {
 
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    piano_sound1.play(piano_soundId1, 1.0f, 1.0f, 1, 0, 1.0f);
-                                                }
-                                            }).start();
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound1.play(piano_soundId1, 1.0f, 1.0f, 0, 0, 1.0f);
+                                                Log.d("tutorialㅇㅇㅇ", "메세지 1번 실ㄹ행함");
 
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p1_" + cutTime + "@@");
-                                        }
+                                            }
+                                        }).start();
 
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 1;
-                                        handler.sendMessage(messageId);
-
-                                    } else if (a == '2') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    piano_sound2.play(piano_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p2_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 2;
-                                        handler.sendMessage(messageId);
-
-                                    } else if (a == '3') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    piano_sound3.play(piano_soundId3, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p3_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 3;
-                                        handler.sendMessage(messageId);
-
-                                    } else if (a == '4') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    piano_sound4.play(piano_soundId4, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p4_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 4;
-                                        handler.sendMessage(messageId);
-
-                                    } else if (a == '5') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    piano_sound5.play(piano_soundId5, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p5_" + cutTime + "@@");
-
-                                        }
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 5;
-                                        handler.sendMessage(messageId);
                                     }
-                                }else if(LobbyActivity.CurrentInstrument == LobbyActivity.DRUM_FLAG){
-                                    if (a == '6') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    piano_sound5.play(piano_soundId5, 1.0f, 1.0f, 1, 0, 1.0f);
 
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p6_" + cutTime + "@@");
-                                        }
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 1;
+                                    handler.sendMessage(messageId);
 
+                                } else if (a == '2') {
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound2.play(piano_soundId2, 1.0f, 1.0f, 0, 0, 1.0f);
 
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 6;
-                                        handler.sendMessage(messageId);
+                                            }
+                                        }).start();
                                     }
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 2;
+                                    handler.sendMessage(messageId);
+
+                                } else if (a == '3') {
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound3.play(piano_soundId3, 1.0f, 1.0f, 0, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                    }
+
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 3;
+                                    handler.sendMessage(messageId);
+
+                                } else if (a == '4') {
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound4.play(piano_soundId4, 1.0f, 1.0f, 0, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                    }
+
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 4;
+                                    handler.sendMessage(messageId);
+
+                                } else if (a == '5') {
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound5.play(piano_soundId5, 1.0f, 1.0f, 0, 0, 1.0f);
+
+                                            }
+                                        }).start();
+
+                                    }
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 5;
+                                    handler.sendMessage(messageId);
                                 }
+                            }
 
+                        }
+
+
+                    }
+                } catch (Exception e) {
+                    Log.d("sdfsdf", "왼손 에러: " + e.getMessage());
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start();
+
+        /** 오른손 **/
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    while (isRaspOn) {
+//                                Log.d("ㅇㅇㅇ","메세지 기다림");
+
+                        if (LobbyActivity.right_in == null) {
+                            Log.d("sdffsd", "sfdfsd");
+                        }
+                        right = String.valueOf(LobbyActivity.right_in.readByte());
+                        if (LoginActivity.soundOn == 1) {
+
+                            char a = (char) Integer.parseInt(right);
+                            Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
+
+                            if (LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG) {
+                                if (a == '1') {
+
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound6.play(piano_soundId6, 1.0f, 1.0f, 0, 0, 1.0f);
+                                            }
+                                        }).start();
+                                    }
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 11;
+                                    handler.sendMessage(messageId);
+
+                                } else if (a == '2') {
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound7.play(piano_soundId7, 1.0f, 1.0f, 0, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                    }
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 12;
+                                    handler.sendMessage(messageId);
+
+                                } else if (a == '3') {
+
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound8.play(piano_soundId8, 1.0f, 1.0f, 0, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                    }
+
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 13;
+                                    handler.sendMessage(messageId);
+
+                                } else if (a == '4') {
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound9.play(piano_soundId9, 1.0f, 1.0f, 0, 0, 1.0f);
+
+                                            }
+                                        }).start();
+                                    }
+
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 14;
+                                    handler.sendMessage(messageId);
+
+                                } else if (a == '5') {
+                                    if (user_job.equals("student")) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                piano_sound10.play(piano_soundId10, 1.0f, 1.0f, 0, 0, 1.0f);
+
+                                            }
+                                        }).start();
+
+                                    }
+
+                                    Message messageId = handler.obtainMessage();
+                                    messageId.what = 15;
+                                    handler.sendMessage(messageId);
+                                }
                             }
 
 
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+
+
                     }
-
-
+                } catch (Exception e) {
+                    Log.d("sdfsdf", "오른손 에러: " + e.getMessage());
+                    e.printStackTrace();
                 }
-            }).start();
-
-            /** 오른손 **/
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-
-                        while (isRaspOn) {
-//                                Log.d("ㅇㅇㅇ","메세지 기다림");
-
-                            if (LobbyActivity.right_in == null) {
-                                Log.d("sdffsd", "sfdfsd");
-                            }
-                            right = String.valueOf(LobbyActivity.right_in.readByte());
-                            if (LoginActivity.soundOn == 1) {
-
-                                char a = (char) Integer.parseInt(right);
-                                Log.d("tutorialㅇㅇㅇ", "메세지 " + a);
-
-                                if(LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG){
-                                    if (a == '1') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    piano_sound6.play(piano_soundId6, 1.0f, 1.0f, 1, 0, 1.0f);
-                                                }
-                                            }).start();
-
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p6_" + cutTime + "@@");
-                                        }
 
 
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 11;
-                                        handler.sendMessage(messageId);
-
-                                    } else if (a == '2') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    piano_sound7.play(piano_soundId7, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p7_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 12;
-                                        handler.sendMessage(messageId);
-
-                                    }
-                                    else if (a == '3') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    drum_sound2.play(drum_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p9_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 13;
-                                        handler.sendMessage(messageId);
-
-                                    }
-                                    else if (a == '4') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    drum_sound2.play(drum_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p9_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 14;
-                                        handler.sendMessage(messageId);
-
-                                    }
-                                    else if (a == '5') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    drum_sound2.play(drum_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p9_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 15;
-                                        handler.sendMessage(messageId);
-
-                                    }
-                                    else if (a == '7') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    drum_sound2.play(drum_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p9_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 17;
-                                        handler.sendMessage(messageId);
-
-                                    }
-                                }else if(LobbyActivity.CurrentInstrument == LobbyActivity.DRUM_FLAG){
-                                    if (a == '6') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    drum_sound2.play(drum_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p9_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 16;
-                                        handler.sendMessage(messageId);
-
-                                    }
-                                    else if (a == '7') {
-                                        if(!LobbyActivity.user_id.equals("teacher")){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    drum_sound2.play(drum_soundId2, 1.0f, 1.0f, 1, 0, 1.0f);
-
-                                                }
-                                            }).start();
-                                            cutTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                                            raspDataToServer.add("p9_" + cutTime + "@@");
-                                        }
-
-
-                                        Message messageId = handler.obtainMessage();
-                                        messageId.what = 17;
-                                        handler.sendMessage(messageId);
-
-                                    }
-                                }
-
-
-                            }
-
-
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-            }).start();
+            }
+        }).start();
 
     }
 
@@ -1664,9 +1498,11 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         }
 
     }
+
+
     //악기 바꾸기 메서드.
-    private void changeInstrument(){
-        if(LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG){
+    private void changeInstrument() {
+        if (LobbyActivity.CurrentInstrument == LobbyActivity.PIANO_FLAG) {
             LobbyActivity.CurrentInstrument = LobbyActivity.DRUM_FLAG;
             hand_image.setVisibility(View.GONE);
             hand_left1_image.setVisibility(View.GONE);
@@ -1679,13 +1515,9 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             hand_right3_image.setVisibility(View.GONE);
             hand_right4_image.setVisibility(View.GONE);
             hand_right5_image.setVisibility(View.GONE);
-            drum_default_imageView.setVisibility(View.VISIBLE);
 
-        }else if(LobbyActivity.CurrentInstrument == LobbyActivity.DRUM_FLAG){
+        } else if (LobbyActivity.CurrentInstrument == LobbyActivity.DRUM_FLAG) {
             LobbyActivity.CurrentInstrument = LobbyActivity.PIANO_FLAG;
-            drum_default_imageView.setVisibility(View.GONE);
-            drum_left_imageView.setVisibility(View.GONE);
-            drum_right_imageView.setVisibility(View.GONE);
             hand_image.setVisibility(View.VISIBLE);
         }
     }
@@ -1712,17 +1544,30 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
             if (message.equals("play")) {
                 if (isPlaying == false) {
-                    play_pause_btn_imageView.setImageResource(R.drawable.pause_btn_image);
-                    if (!LobbyActivity.user_id.equals("teacher")) {
-                        if (mediaPlayer.getCurrentPosition() == 0) {
-                            mediaPlayer.seekTo(0);
-                        } else {
-                            mediaPlayer.seekTo(seek_position);
-                        }
+//                    if (user_job.equals("student")) {
+                    if (mediaPlayer.getCurrentPosition() == 0) {
+                        mediaPlayer.seekTo(0);
+                    } else {
+                        mediaPlayer.seekTo(seek_position);
+                    }
 
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    play_pause_btn_imageView.setImageResource(R.drawable.pause_btn_image);
+                                }
+                            });
+                        }
+                    }).start();
+
+                    if (seek_position == 0) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
+
                                 for (int i = 3; i > 0; i--) {
                                     final int finalI = i;
                                     runOnUiThread(new Runnable() {
@@ -1744,74 +1589,48 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                                     }
                                 });
                                 try {
-                                    Thread.sleep(500);
+                                    Thread.sleep(200);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
                                 mediaPlayer.start();
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                while (mediaPlayer != null && mediaPlayer.isPlaying()) {
-
-                                                    int time = mediaPlayer.getCurrentPosition();
-
-                                                    if (mediaPlayer.getCurrentPosition() < 10000) {
-                                                        time = mediaPlayer.getCurrentPosition() / 100;
-                                                    } else if (mediaPlayer.getCurrentPosition() < 20000) {
-                                                        time = (mediaPlayer.getCurrentPosition() - 10000) / 100;
-                                                    } else if (mediaPlayer.getCurrentPosition() < 30000) {
-                                                        time = (mediaPlayer.getCurrentPosition() - 20000) / 100;
-                                                    } else if (mediaPlayer.getCurrentPosition() < 40000) {
-                                                        time = (mediaPlayer.getCurrentPosition() - 30000) / 100;
-                                                    } else if (mediaPlayer.getCurrentPosition() < 50000) {
-                                                        time = (mediaPlayer.getCurrentPosition() - 40000) / 100;
-                                                    } else if (mediaPlayer.getCurrentPosition() < 60000) {
-                                                        time = (mediaPlayer.getCurrentPosition() - 50000) / 100;
-                                                    } else if (mediaPlayer.getCurrentPosition() < 70000) {
-                                                        time = (mediaPlayer.getCurrentPosition() - 60000) / 100;
-                                                    }
-
-                                                    if (time <= 25) {
-                                                        codeTextChange("C 코드");
-                                                    } else if (time <= 50) {
-                                                        codeTextChange("F 코드");
-                                                    } else if (time <= 75) {
-                                                        codeTextChange("A 코드");
-                                                    } else if (time <= 100) {
-                                                        codeTextChange("F 코드");
-                                                    }
-
-                                                }
-                                            }
-                                        });
-                                    }
-                                }).start();
                             }
                         }).start();
+                    } else {
+                        mediaPlayer.start();
                     }
+
                     isPlaying = true;
-                } else {
-                    play_pause_btn_imageView.setImageResource(R.drawable.play_btn_image);
-                    if (!LobbyActivity.user_id.equals("teacher")) {
-                        mediaPlayer.pause();
-                        seek_position = mediaPlayer.getCurrentPosition();
-                    }
-                    isPlaying = false;
                 }
             }
+
             if (message.equals("stop")) {
                 play_pause_btn_imageView.setImageResource(R.drawable.play_btn_image);
-                if (!LobbyActivity.user_id.equals("teacher")) {
-                    mediaPlayer.seekTo(0);
-                    seek_position = 0;
-                    mediaPlayer.pause();
-                }
+//                if (user_job.equals("student")) {
+                mediaPlayer.seekTo(0);
+                seek_position = 0;
+                mediaPlayer.pause();
+//                }
                 isPlaying = false;
                 Toast.makeText(CallActivity.this, "음악이 정지되었습니다.", Toast.LENGTH_SHORT).show();
+            }
+
+            if (message.equals("pause")) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (user_job.equals("teacher"))
+                                    play_pause_btn_imageView.setImageResource(R.drawable.play_btn_image);
+                            }
+                        });
+                    }
+                }).start();
+                mediaPlayer.pause();
+                seek_position = mediaPlayer.getCurrentPosition();
+                isPlaying = false;
             }
 
             if (message.equals("close")) {
@@ -1825,47 +1644,72 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 } catch (Exception e) {
 
                 }
+                if (user_job.equals("student"))
+                    finish();
+                else if (user_job.equals("teacher")) {
+                    try {
+                        String url = "http://54.180.26.72/get_student_name.php";
+                        ContentValues values = new ContentValues();
+                        values.put("master_id", LobbyActivity.user_id);
 
-                finish();
+                        NetWorkAsync netWorkAsync = new NetWorkAsync(url, values);
+
+                        String get_student_name = netWorkAsync.execute().get();
+                        Log.d("SDFds", get_student_name + "@!");
+                        Intent intent1 = new Intent(CallActivity.this, FeedbackWriteActivity.class);
+                        intent1.putExtra("student_name", get_student_name);
+                        intent1.putExtra("master_name", LobbyActivity.user_id);
+                        startActivity(intent1);
+                        finish();
+
+                    } catch (Exception e) {
+
+                    }
+
+
+                }
             }
 
-            if (message.equals("p4")) {
+            if (message.equals("p1")) {
                 updateUIThread("도");
+                updateColorThread(Color.parseColor("#CC6B00"));
+            }
+            if (message.equals("p2")) {
+                updateUIThread("레");
+                updateColorThread(Color.parseColor("#CC13C0"));
+            }
+            if (message.equals("p3")) {
+                updateUIThread("미");
+                updateColorThread(Color.parseColor("#76CC00"));
+            }
+            if (message.equals("p4")) {
+                updateUIThread("파");
                 updateColorThread(Color.parseColor("#CC13C0"));
             }
             if (message.equals("p5")) {
-                updateUIThread("레");
+                updateUIThread("솔");
                 updateColorThread(Color.parseColor("#CC0801"));
             }
             if (message.equals("p6")) {
-                updateUIThread("미");
+                updateUIThread("라");
                 updateColorThread(Color.parseColor("#CC6B00"));
             }
             if (message.equals("p7")) {
-                updateUIThread("파");
+                updateUIThread("시");
                 updateColorThread(Color.parseColor("#CCAF00"));
             }
             if (message.equals("p8")) {
-                updateUIThread("솔");
+                updateUIThread("도");
                 updateColorThread(Color.parseColor("#76CC00"));
             }
             if (message.equals("p9")) {
-                updateUIThread("라");
+                updateUIThread("레");
                 updateColorThread(Color.parseColor("#FF1DEC"));
             }
             if (message.equals("p10")) {
-                updateUIThread("시");
+                updateUIThread("미");
                 updateColorThread(Color.parseColor("#FF0069"));
             }
-            if (message.equals("drum_left")) {
-                updateUIThread("왼 쿵");
-                updateColorThread(Color.parseColor("#FF8D28"));
-            }
-            if (message.equals("drum_right")) {
-                updateUIThread("오 쿵");
-                updateColorThread(Color.parseColor("#F01700"));
-            }
-
         }
     };
 
@@ -1903,32 +1747,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             }
         }).start();
     }
-    private void changeDrumImage(String index) {
-        drum_default_imageView.setVisibility(View.GONE);
-        drum_left_imageView.setVisibility(View.GONE);
-        drum_right_imageView.setVisibility(View.GONE);
-        switch (index) {
-            case "left":
-                drum_left_imageView.setVisibility(View.VISIBLE);
-                break;
-            case "right":
-                drum_right_imageView.setVisibility(View.VISIBLE);
-                break;
-        }
 
-    }
-    public void codeTextChange(final String msg){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        code_text.setVisibility(View.VISIBLE);
-                        code_text.setText(msg);
-                    }
-                });
-            }
-        }).start();
-    }
+
 }

@@ -38,7 +38,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
     public interface MyClickListener {
         // 아이템 전체 부분 클릭
-        void onItemClicked();
+        void onItemClicked(int position,ArrayList<RecyclerRoomListData> roomListDataArrayList);
     }
 
     // 메인에서 setOn클릭리스너
@@ -47,7 +47,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RoomListViewHolder roomListViewHolder, int position) {
+    public void onBindViewHolder(@NonNull RoomListViewHolder roomListViewHolder, final int position) {
 
         roomListViewHolder.room_number.setText(roomListDataArrayList.get(position).getRoom_number());
         roomListViewHolder.room_name.setText(roomListDataArrayList.get(position).getRoom_name());
@@ -61,7 +61,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             public void onClick(View v) {
                 if(listener != null){
                     Log.d("Adapter onClick Log", "Adapter onClick!!");
-                    listener.onItemClicked();
+                    listener.onItemClicked(position, roomListDataArrayList);
                 }
             }
         });

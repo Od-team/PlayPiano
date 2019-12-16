@@ -49,81 +49,27 @@
 
     <org.webrtc.SurfaceViewRenderer
         android:id="@+id/fullscreen_video_view"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/call_bgm_text"
-        tools:layout_editor_absoluteX="8dp" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:gravity="center"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal"
-        android:weightSum="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fullscreen_video_view">
-
-        <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/pip_video_view"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="0.5"
-            android:background="@drawable/black_border"
-            android:clickable="false"
-            android:focusable="false" />
-
-        <ImageView
-            android:id="@+id/empty_person_imageView"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_weight="0.5"
-            android:background="@drawable/black_border"
-            android:scaleType="fitCenter"
-            android:src="@drawable/person" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_marginBottom="10dp"
-        android:weightSum="1"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintLeft_toLeftOf="@+id/linearLayout2"
-        app:layout_constraintRight_toRightOf="@+id/linearLayout2"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout2">
-
-        <ImageView
-            android:id="@+id/opponent_imageView"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="0.5" />
-
-        <ImageView
-            android:id="@+id/opponent_imageView1"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_weight="0.5"
-            android:background="@drawable/black_border"
-            android:scaleType="fitCenter"
-            android:src="@drawable/person" />
+        app:layout_constraintTop_toBottomOf="@+id/call_bgm_text" />
 
 
-    </LinearLayout>
-
+    <org.webrtc.SurfaceViewRenderer
+        android:id="@+id/pip_video_view"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="0.5"
+        android:background="@drawable/black_border"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintEnd_toEndOf="@+id/fullscreen_video_view"
+        app:layout_constraintStart_toStartOf="@+id/fullscreen_video_view"
+        app:layout_constraintTop_toBottomOf="@+id/fullscreen_video_view" />
 
     <FrameLayout
         android:id="@+id/call_fragment_container"
@@ -136,13 +82,13 @@
 
 
     <!--<FrameLayout-->
-        <!--android:id="@+id/hud_fragment_container"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--tools:layout_editor_absoluteX="8dp"-->
-        <!--tools:layout_editor_absoluteY="8dp" />-->
+    <!--android:id="@+id/hud_fragment_container"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--tools:layout_editor_absoluteX="8dp"-->
+    <!--tools:layout_editor_absoluteY="8dp" />-->
 
     <Button
         android:id="@+id/button7"
@@ -163,14 +109,19 @@
         android:id="@+id/hand_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:adjustViewBounds="true"
         android:padding="20dp"
         android:src="@drawable/hand_default"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/pip_video_view" />
 
     <ImageView
         android:id="@+id/hand_left1_imageView"
@@ -183,8 +134,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_left2_imageView"
@@ -197,8 +147,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_left3_imageView"
@@ -211,8 +160,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_left4_imageView"
@@ -225,8 +173,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_left5_imageView"
@@ -239,8 +186,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_right1_imageView"
@@ -253,8 +199,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_right2_imageView"
@@ -267,8 +212,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_right3_imageView"
@@ -281,8 +225,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_right4_imageView"
@@ -295,8 +238,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/hand_right5_imageView"
@@ -309,8 +251,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <ImageView
@@ -324,8 +265,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <ImageView
@@ -335,12 +275,11 @@
         android:layout_margin="8dp"
         android:adjustViewBounds="true"
         android:padding="20dp"
+        android:src="@drawable/play_drum_left"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        android:src="@drawable/play_drum_left"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <ImageView
@@ -350,24 +289,23 @@
         android:layout_margin="8dp"
         android:adjustViewBounds="true"
         android:padding="20dp"
+        android:src="@drawable/play_drum_right"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        android:src="@drawable/play_drum_right"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/Umm_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
         android:fontFamily="@font/cookierun_bold"
         android:gravity="center"
         android:text="도"
         android:textColor="#000000"
         android:textSize="48sp"
         android:visibility="visible"
-        android:layout_marginBottom="50dp"
         app:layout_constraintBottom_toBottomOf="@+id/hand_imageView"
         app:layout_constraintLeft_toLeftOf="@+id/hand_imageView"
         app:layout_constraintRight_toRightOf="@+id/hand_imageView"
@@ -378,7 +316,6 @@
         android:id="@+id/code_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/cookierun_bold"
         android:gravity="center"
@@ -386,7 +323,40 @@
         android:textColor="#000000"
         android:textSize="28sp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/Umm_text"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+        app:layout_constraintBottom_toTopOf="@+id/Umm_text" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="선생님"
+        android:textColor="#000000"
+        android:textSize="26sp"
+        app:layout_constraintBottom_toBottomOf="@+id/fullscreen_video_view"
+        app:layout_constraintEnd_toStartOf="@+id/fullscreen_video_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/fullscreen_video_view" />
+
+    <TextView
+        android:id="@+id/textView51"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:fontFamily="@font/cookierun_bold"
+        android:text="학생"
+        android:textColor="#000000"
+        android:textSize="26sp"
+        app:layout_constraintBottom_toBottomOf="@+id/pip_video_view"
+        app:layout_constraintEnd_toStartOf="@+id/pip_video_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pip_video_view" />
 
 </android.support.constraint.ConstraintLayout>
